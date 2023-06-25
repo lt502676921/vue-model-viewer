@@ -9,7 +9,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     lib: {
       formats: ['es', 'cjs', 'iife'],
-      entry: path.resolve(__dirname, 'src/index.ts'),
+      entry: path.resolve(__dirname, 'src/index.js'),
       name: 'Vue3DModel',
       fileName: (format) => {
         const fileNamePrefix = 'vue-3d-model';

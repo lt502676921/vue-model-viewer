@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
 import mixin from './model-mixin.vue';
@@ -41,7 +41,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getObject(collada: any) {
+    getObject(collada) {
       return collada.scene;
     },
   },

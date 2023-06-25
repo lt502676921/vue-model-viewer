@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import {
@@ -39,7 +39,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getObject(geometry: BufferGeometry) {
+    getObject(geometry) {
       return new Mesh(geometry, new MeshPhongMaterial());
     },
   },

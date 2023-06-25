@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import {
@@ -39,7 +39,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getObject(geometry: BufferGeometry) {
+    getObject(geometry) {
       geometry.computeVertexNormals();
 
       return new Mesh(geometry, new MeshStandardMaterial());

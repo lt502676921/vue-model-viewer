@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import mixin from './model-mixin.vue';

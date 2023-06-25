@@ -9,13 +9,13 @@ import {
 
 const box = new Box3();
 
-function getSize(object: Object3D) {
+function getSize(object) {
   box.setFromObject(object);
 
   return box.getSize(new Vector3());
 }
 
-function getCenter(object: Object3D) {
+function getCenter(object) {
   box.setFromObject(object);
 
   return box.getCenter(new Vector3());
@@ -24,26 +24,26 @@ function getCenter(object: Object3D) {
 // function lightsDiff(lights, oldLights) {
 // }
 
-function toIndexed(bufferGeometry: BufferGeometry) {
+function toIndexed(bufferGeometry) {
   const rawPositions = bufferGeometry.getAttribute('position').array;
 
-  let rawUvs: ArrayLike<number>;
+  let rawUvs;
   const hasUV = bufferGeometry.getAttribute('uv') !== undefined;
   if (hasUV) rawUvs = bufferGeometry.getAttribute('uv').array;
 
-  let rawNormals: ArrayLike<number>;
+  let rawNormals;
   const hasNormal = bufferGeometry.getAttribute('normal') !== undefined;
   if (hasNormal) rawNormals = bufferGeometry.getAttribute('normal').array;
 
-  const indices: number[] = [];
-  const vertices: Vector3[] = [];
-  const normals: Vector3[] = [];
-  const uvs: Vector2[] = [];
+  const indices = [];
+  const vertices = [];
+  const normals = [];
+  const uvs = [];
 
-  let face: Vector3[];
-  let faceNormalss: Vector3[];
-  let faceUvs: Vector2[];
-  let tmpIndices: number[];
+  let face;
+  let faceNormalss;
+  let faceUvs;
+  let tmpIndices;
 
   const v0 = new Vector3();
   const v1 = new Vector3();
@@ -73,30 +73,30 @@ function toIndexed(bufferGeometry: BufferGeometry) {
     face = [v0, v1, v2];
 
     if (hasNormal) {
-      n0.x = rawNormals![i];
-      n0.y = rawNormals![i + 1];
-      n0.z = rawNormals![i + 2];
+      n0.x = rawNormals[i];
+      n0.y = rawNormals[i + 1];
+      n0.z = rawNormals[i + 2];
 
-      n1.x = rawNormals![i + 3];
-      n1.y = rawNormals![i + 4];
-      n1.z = rawNormals![i + 5];
+      n1.x = rawNormals[i + 3];
+      n1.y = rawNormals[i + 4];
+      n1.z = rawNormals[i + 5];
 
-      n2.x = rawNormals![i + 6];
-      n2.y = rawNormals![i + 7];
-      n2.z = rawNormals![i + 8];
+      n2.x = rawNormals[i + 6];
+      n2.y = rawNormals[i + 7];
+      n2.z = rawNormals[i + 8];
 
       faceNormalss = [n0, n1, n2];
     }
 
     if (hasUV) {
-      uv0.x = rawUvs![i];
-      uv0.y = rawUvs![i + 1];
+      uv0.x = rawUvs[i];
+      uv0.y = rawUvs[i + 1];
 
-      uv1.x = rawUvs![i + 2];
-      uv1.y = rawUvs![i + 3];
+      uv1.x = rawUvs[i + 2];
+      uv1.y = rawUvs[i + 3];
 
-      uv2.x = rawUvs![i + 4];
-      uv2.y = rawUvs![i + 5];
+      uv2.x = rawUvs[i + 4];
+      uv2.y = rawUvs[i + 5];
 
       faceUvs = [uv0, uv1, uv2];
     }
@@ -120,8 +120,8 @@ function toIndexed(bufferGeometry: BufferGeometry) {
 
   const positionBuffer = new Float32Array(vertices.length * 3);
 
-  let normalBuffer: Float32Array;
-  let uvBuffer: Float32Array;
+  let normalBuffer;
+  let uvBuffer;
 
   if (hasNormal) normalBuffer = new Float32Array(vertices.length * 3);
   if (hasUV) uvBuffer = new Float32Array(vertices.length * 2);
@@ -136,25 +136,25 @@ function toIndexed(bufferGeometry: BufferGeometry) {
     positionBuffer[i3 + 2] = vertices[i].z;
 
     if (hasNormal) {
-      normalBuffer![i3] = normals[i].x;
-      normalBuffer![i3 + 1] = normals[i].y;
-      normalBuffer![i3 + 2] = normals[i].z;
+      normalBuffer[i3] = normals[i].x;
+      normalBuffer[i3 + 1] = normals[i].y;
+      normalBuffer[i3 + 2] = normals[i].z;
     }
 
     if (hasUV) {
       i2 = i * 2;
-      uvBuffer![i2] = uvs[i].x;
-      uvBuffer![i2 + 1] = uvs[i].y;
+      uvBuffer[i2] = uvs[i].x;
+      uvBuffer[i2 + 1] = uvs[i].y;
     }
   }
 
   bufferGeometry.addAttribute('position', new BufferAttribute(positionBuffer, 3));
-  if (hasNormal) bufferGeometry.addAttribute('normal', new BufferAttribute(normalBuffer!, 3));
-  if (hasUV) bufferGeometry.addAttribute('uv', new BufferAttribute(uvBuffer!, 2));
+  if (hasNormal) bufferGeometry.addAttribute('normal', new BufferAttribute(normalBuffer, 3));
+  if (hasUV) bufferGeometry.addAttribute('uv', new BufferAttribute(uvBuffer, 2));
   bufferGeometry.setIndex(new BufferAttribute(new Uint32Array(indices), 1));
   return bufferGeometry;
 
-  function exists(v: Vector3, vertices: Vector3[]) {
+  function exists(v, vertices) {
     for (let i = 0; i < vertices.length; i++) {
       if (v.equals(vertices[i])) return i;
     }

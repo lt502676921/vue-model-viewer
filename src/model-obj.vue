@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { Object3D } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
@@ -47,7 +47,7 @@ export default defineComponent({
       type: String,
     },
   },
-  data(this: any) {
+  data() {
     const objLoader = new OBJLoader(manager);
     const mtlLoader = new MTLLoader(manager);
 
@@ -66,9 +66,9 @@ export default defineComponent({
     },
   },
   methods: {
-    process(object: Object3D) {
+    process(object) {
       if (this.smoothing) {
-        object.traverse((child: any) => {
+        object.traverse((child) => {
           if (child.geometry) {
             child.geometry = toIndexed(child.geometry);
             child.geometry.computeVertexNormals();
@@ -76,14 +76,14 @@ export default defineComponent({
         });
       }
     },
-    load(this: any) {
+    load() {
       if (!this.src) return;
 
       if (this.object) {
         this.wrapper.remove(this.object);
       }
 
-      const onLoad = (object: Object3D) => {
+      const onLoad = (object) => {
         this.reportProgress('end');
         if (this.process) {
           this.process(object);
@@ -94,12 +94,12 @@ export default defineComponent({
         this.$emit('load');
       };
 
-      const onProgress = (event: ProgressEvent) => {
+      const onProgress = (event) => {
         this.reportProgress('progress', event);
         this.$emit('progress', event);
       };
 
-      const onError = (event: ErrorEvent) => {
+      const onError = (event) => {
         this.reportProgress('end');
         this.$emit('error', event);
       };
@@ -123,12 +123,12 @@ export default defineComponent({
           this.mtlLoader.setPath(mtlPath);
         }
 
-        this.mtlLoader.load(mtlSrc, (materials: any) => {
+        this.mtlLoader.load(mtlSrc, (materials) => {
           materials.preload();
 
           this.loader
             .setMaterials(materials)
-            .load(this.src!, onLoad, onProgress, onError);
+            .load(this.src, onLoad, onProgress, onError);
         }, () => {}, onError);
       } else {
         this.loader.load(this.src, onLoad, onProgress, onError);

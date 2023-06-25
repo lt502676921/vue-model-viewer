@@ -7,6 +7,7 @@ import ModelStl from './model-stl.vue';
 import ModelPly from './model-ply.vue';
 import ModelCollada from './model-collada.vue';
 import ModelGltf from './model-gltf.vue';
+import ModelXyz from './model-xyz.vue';
 
 export { Three };
 
@@ -31,13 +32,14 @@ const components = [
   ModelCollada,
   ModelDae,
   ModelGltf,
+  ModelXyz
 ];
 
 const INSTALLED_KEY = Symbol('VUE_3D_MODEL_INSTALLED');
 
 /* eslint-disable no-shadow */
-const install = (app: App) => {
-  if ((app as any)[INSTALLED_KEY]) return;
+const install = (app) => {
+  if ((app)[INSTALLED_KEY]) return;
   components.forEach((component) => {
     app.component(component.name, component);
   });
@@ -54,6 +56,7 @@ export default {
   ModelCollada,
   ModelDae,
   ModelGltf,
+  ModelXyz
 };
 
 export {
@@ -67,4 +70,5 @@ export {
   ModelCollada,
   ModelDae,
   ModelGltf,
+  ModelXyz
 };

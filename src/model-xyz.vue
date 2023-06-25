@@ -1,22 +1,27 @@
 <script>
 import { defineComponent } from 'vue';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { XYZLoader } from 'three/examples/jsm/loaders/XYZLoader';
+import {
+  Mesh,
+  MeshStandardMaterial,
+  BufferGeometry
+} from 'three';
 import mixin from './model-mixin.vue';
 
 export default defineComponent({
-  name: 'model-fbx',
+  name: 'model-xyz',
   mixins: [mixin],
   props: {
     lights: {
       type: Array,
-      default() {
+      default: () => {
         return [
           {
             type: 'HemisphereLight',
             position: { x: 0, y: 1, z: 0 },
-            skyColor: 0xffffff,
-            groundColor: 0xffffff,
-            intensity: 0.8,
+            skyColor: 0xaaaaff,
+            groundColor: 0x806060,
+            intensity: 0.2,
           },
           {
             type: 'DirectionalLight',
@@ -30,13 +35,14 @@ export default defineComponent({
   },
   data() {
     return {
-      loader: new FBXLoader(),
+      loader: new XYZLoader(),
     };
   },
   methods: {
     getObject(geometry) {
-      this.animations = geometry.animations;
-      return geometry;
+      geometry.computeVertexNormals();
+
+      return new Mesh(geometry, new MeshStandardMaterial());
     },
   },
 });

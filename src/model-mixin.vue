@@ -31,7 +31,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 
 import {
   Object3D,
@@ -91,10 +91,7 @@ export default defineComponent({
       },
     },
     lights: {
-      type: Array as PropType<{
-        type: string;
-        [key: string]: any;
-      }[]>,
+      type: Array,
       default: () => {
         return [];
       },
@@ -145,18 +142,18 @@ export default defineComponent({
   },
   data() {
     const result = {
-      object: null as null | Object3D,
+      object: null,
       raycaster: new Raycaster(),
       mouse: new Vector2(),
       camera: new PerspectiveCamera(45, 1, 0.01, 100000),
       scene: new Scene(),
       wrapper: new Object3D(),
-      renderer: null as null | WebGLRenderer,
-      controls: null as null | OrbitControls,
-      allLights: [] as Light[],
+      renderer: null,
+      controls: null,
+      allLights: [],
       clock: typeof performance === 'undefined' ? Date : performance,
-      reqId: null as null | number, // requestAnimationFrame id,
-      loader: null as any as Loader,  // 会被具体实现的组件覆盖
+      reqId: null, // requestAnimationFrame id,
+      loader: null,  // 会被具体实现的组件覆盖
     };
 
     // 确保这些对象不被转为 vue reactive 对象，避免 three 渲染出错
@@ -171,18 +168,11 @@ export default defineComponent({
         isComplete: false,
         lengthComputable: false,
         loaded: 0,
-      } as {
-        startedAt?: number;
-        endedAt?: number;
-        isComplete: boolean;
-        lengthComputable: boolean
-        loaded: number;
-        total: number;
       },
     }
 
     // 为了保留类型信息，仍然返回 result 的 type
-    return reactiveState as (typeof result & typeof reactiveState);
+    return reactiveState;
   },
   computed: {
     loadProgressPercentage() {
@@ -199,17 +189,17 @@ export default defineComponent({
   mounted() {
     if (this.width === undefined || this.height === undefined) {
       this.size = {
-        width: (this.$refs.container as HTMLDivElement).offsetWidth,
-        height: (this.$refs.container as HTMLDivElement).offsetHeight,
+        width: (this.$refs.container).offsetWidth,
+        height: (this.$refs.container).offsetHeight,
       };
     }
 
-    const options: WebGLRendererParameters = Object.assign(
+    const options = Object.assign(
       {},
       DEFAULT_GL_OPTIONS,
       this.glOptions,
       {
-        canvas: this.$refs.canvas as HTMLCanvasElement,
+        canvas: this.$refs.canvas,
       }
     );
 
@@ -217,7 +207,7 @@ export default defineComponent({
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputEncoding = this.outputEncoding;
 
-    this.controls = new OrbitControls(this.camera, (this.$refs.container as HTMLDivElement));
+    this.controls = new OrbitControls(this.camera, (this.$refs.container));
     // this.controls.type = 'orbit';
 
     this.scene.add(this.wrapper);
@@ -225,7 +215,7 @@ export default defineComponent({
     this.load();
     this.update();
 
-    const element = this.$refs.container as HTMLDivElement;
+    const element = this.$refs.container;
 
     element.addEventListener('mousedown', this.onMouseDown, false);
     element.addEventListener('mousemove', this.onMouseMove, false);
@@ -238,15 +228,15 @@ export default defineComponent({
     this.animate();
   },
   beforeDestroy() {
-    cancelAnimationFrame(this.reqId!);
+    cancelAnimationFrame(this.reqId);
 
-    this.renderer!.dispose();
+    this.renderer.dispose();
 
     if (this.controls) {
       this.controls.dispose();
     }
 
-    const element = this.$refs.container as HTMLDivElement;
+    const element = this.$refs.container;
 
     element.removeEventListener('mousedown', this.onMouseDown, false);
     element.removeEventListener('mousemove', this.onMouseMove, false);
@@ -312,54 +302,54 @@ export default defineComponent({
       if (this.width === undefined || this.height === undefined) {
         this.$nextTick(() => {
           this.size = {
-            width: (this.$refs.container as HTMLDivElement).offsetWidth,
-            height: (this.$refs.container as HTMLDivElement).offsetHeight,
+            width: (this.$refs.container).offsetWidth,
+            height: (this.$refs.container).offsetHeight,
           };
         });
       }
     },
-    onMouseDown(event: MouseEvent) {
+    onMouseDown(event) {
       if (!this.$attrs.onMousedown) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
       this.$emit('mousedown', event, intersected);
     },
-    onMouseMove(event: MouseEvent) {
+    onMouseMove(event) {
       console.log(this.$attrs)
       if (!this.$attrs.onMousemove) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
       this.$emit('mousemove', event, intersected);
     },
-    onMouseUp(event: MouseEvent) {
+    onMouseUp(event) {
       if (!this.$attrs.onMouseup) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
       this.$emit('mouseup', event, intersected);
     },
-    onClick(event: MouseEvent) {
+    onClick(event) {
       if (!this.$attrs.onClick) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
       this.$emit('click', event, intersected);
     },
-    onDblclick(event: MouseEvent) {
+    onDblclick(event) {
       if (!this.$attrs.onDblclick) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
       this.$emit('dblclick', event, intersected);
     },
-    pick(x: number, y: number) {
+    pick(x, y) {
       if (!this.object) return null;
       if (!this.$refs.container) return;
 
-      const rect = (this.$refs.container as HTMLDivElement).getBoundingClientRect();
+      const rect = (this.$refs.container).getBoundingClientRect();
 
       x -= rect.left;
       y -= rect.top;
 
-      this.mouse.x = (x / this.size.width!) * 2 - 1;
-      this.mouse.y = -(y / this.size.height!) * 2 + 1;
+      this.mouse.x = (x / this.size.width) * 2 - 1;
+      this.mouse.y = -(y / this.size.height) * 2 + 1;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
 
@@ -389,16 +379,16 @@ export default defineComponent({
     updateRenderer() {
       const { renderer } = this;
 
-      renderer!.setSize(this.size.width!, this.size.height!);
-      renderer!.setPixelRatio(window.devicePixelRatio || 1);
-      renderer!.setClearColor(new Color(this.backgroundColor).getHex());
-      renderer!.setClearAlpha(this.backgroundAlpha);
+      renderer.setSize(this.size.width, this.size.height);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.setClearColor(new Color(this.backgroundColor).getHex());
+      renderer.setClearAlpha(this.backgroundAlpha);
     },
     updateCamera() {
       const { camera } = this;
       const { object } = this;
 
-      camera.aspect = this.size.width! / this.size.height!;
+      camera.aspect = this.size.width / this.size.height;
       camera.updateProjectionMatrix();
 
       if (!this.cameraLookAt || !this.cameraUp) {
@@ -432,7 +422,7 @@ export default defineComponent({
 
         const type = item.type.toLowerCase();
 
-        let light: null | Light = null;
+        let light = null;
 
         if (type === 'ambient' || type === 'ambientlight') {
           const color = item.color === 0x000000 ? item.color : item.color || 0x404040;
@@ -461,7 +451,7 @@ export default defineComponent({
           }
 
           if (item.target) {
-            (light as DirectionalLight).target.copy(item.target);
+            (light).target.copy(item.target);
           }
         } else if (type === 'hemisphere' || type === 'hemispherelight') {
           const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
@@ -483,14 +473,10 @@ export default defineComponent({
     },
     updateControls() {
       if (this.controlsOptions) {
-        Object.assign(this.controls!, this.controlsOptions);
+        Object.assign(this.controls, this.controlsOptions);
       }
     },
-    reportProgress(type: 'start' | 'end' | 'progress', data?: {
-      lengthComputable: boolean;
-      loaded: number;
-      total: number;
-    }) {
+    reportProgress(type, data) {
       if (type === 'start') {
         this.progress.isComplete = false;
         this.progress.startedAt = Date.now();
@@ -516,31 +502,31 @@ export default defineComponent({
 
       this.reportProgress('start');
 
-      (this.loader as any).load(this.src, (...args: any) => {
+      (this.loader).load(this.src, (...args) => {
         this.reportProgress('end');
 
-        const object = (this.getObject as any)(...args);
+        const object = (this.getObject)(...args);
 
         this.process(object);
 
         this.addObject(object);
 
         this.$emit('load');
-      }, (event: ProgressEvent) => {
+      }, (event) => {
         this.reportProgress('progress', event);
         this.$emit('progress', event);
-      }, (event: ErrorEvent) => {
+      }, (event) => {
         this.reportProgress('end');
         this.$emit('error', event);
       });
     },
-    process(object: Object3D) {
+    process(object) {
       return object;
     },
-    getObject(object: Object3D) {
+    getObject(object) {
       return object;
     },
-    addObject(object: Object3D) {
+    addObject(object) {
       this.object = object;
       this.wrapper.add(object);
 
@@ -557,7 +543,7 @@ export default defineComponent({
       this.render();
     },
     render() {
-      this.renderer!.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
     },
   },
 });
