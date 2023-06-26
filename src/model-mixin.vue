@@ -48,12 +48,11 @@ import {
   HemisphereLight,
   DirectionalLight,
   LinearEncoding,
-  WebGLRendererParameters,
   Loader,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { getSize, getCenter } from './utils';
-import { defineComponent, PropType, toRaw } from 'vue';
+import { defineComponent } from 'vue';
 
 const DEFAULT_GL_OPTIONS = {
   antialias: true,
@@ -183,7 +182,7 @@ export default defineComponent({
         return Math.min(0.92, this.progress.loaded / (this.progress.total * 3)) * 100;
       }
 
-      return Math.min(1, this.progress.loaded / this.progress.total) * 100;
+      return Math.min(1, this.progress.total > 0 ? this.progress.loaded / this.progress.total : 0) * 100;
     }
   },
   mounted() {

@@ -1,6 +1,6 @@
 {
   "name": "aeonlabs-vue-model-viewer",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/vue-3d-model.cjs.js",
   "files": [

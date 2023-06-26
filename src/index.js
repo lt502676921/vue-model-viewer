@@ -1,4 +1,4 @@
-import { defineComponent, App } from 'vue';
+import { defineComponent } from 'vue';
 import * as Three from 'three';
 import ModelObj from './model-obj.vue';
 import ModelFbx from './model-fbx.vue';
