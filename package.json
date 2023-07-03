@@ -1,5 +1,5 @@
 {
-  "name": "aeonlabs-vue-model-viewer",
+  "name": "@aeonlabs/vue-model-viewer",
   "version": "0.0.1",
   "description": "",
   "main": "dist/vue-model-viewer.cjs.js",
