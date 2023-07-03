@@ -30,7 +30,7 @@ export default defineComponent({
     },
   },
   data() {
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader(this.loadingManager);
     loader.setCrossOrigin(this.crossOrigin);
     loader.setRequestHeader(this.requestHeader);
 

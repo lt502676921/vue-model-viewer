@@ -8,10 +8,6 @@ import { LoadingManager } from 'three/src/loaders/LoadingManager';
 import { toIndexed } from './utils';
 import mixin from './model-mixin.vue';
 
-// TODO: Better way to handle texture formats
-const manager = new LoadingManager(); // 0.122+ new api
-manager.addHandler(/\.dds$/i, new DDSLoader());
-
 export default defineComponent({
   name: 'model-obj',
   mixins: [mixin],
@@ -48,8 +44,11 @@ export default defineComponent({
     },
   },
   data() {
-    const objLoader = new OBJLoader(manager);
-    const mtlLoader = new MTLLoader(manager);
+    // TODO: Better way to handle texture formats
+    this.loadingManager.addHandler(/\.dds$/i, new DDSLoader());
+
+    const objLoader = new OBJLoader(this.loadingManager);
+    const mtlLoader = new MTLLoader(this.loadingManager);
 
     mtlLoader.setCrossOrigin(this.crossOrigin);
     mtlLoader.setRequestHeader(this.requestHeader);

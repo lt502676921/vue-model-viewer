@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative; width: 100%; height: 100%; margin: 0; border: 0; padding: 0" ref="container">
     <slot name="progress-bar" :progress="progress" v-if="progress.isComplete === false">
-      <div style="position: absolute; z-index: 2; height: 3px; width: 100%; background-color: rgba(0, 0, 0, 0.04)">
+      <!-- <div style="position: absolute; z-index: 2; height: 3px; width: 100%; background-color: rgba(0, 0, 0, 0.04)">
         <div
           :style="{
             width: `${loadProgressPercentage}%`,
@@ -10,7 +10,22 @@
             transition: 'width .2s',
           }"
         />
-      </div>
+      </div> -->
+      <div
+        ref="loadingBarElement"
+        style="
+          position: absolute;
+          top: 50%;
+          width: 100%;
+          height: 2px;
+          background-color: #ffffff;
+          transform: scaleX(0);
+          transform-origin: top left;
+          transition: transform 0.5s;
+          will-change: transform;
+        "
+        :style="{ transform: `scaleX(${loadProgressPercentage}%)` }"
+      />
     </slot>
     <div v-if="progress.isComplete === false" style="position: absolute; z-index: 1; width: 100%; height: 100%">
       <slot name="poster" />
@@ -36,8 +51,13 @@ import {
   DirectionalLight,
   LinearEncoding,
   Loader,
+  LoadingManager,
+  ShaderMaterial,
+  PlaneGeometry,
+  Mesh,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { gsap } from 'gsap';
 import { getSize, getCenter } from './utils';
 import { defineComponent } from 'vue';
 
@@ -139,6 +159,67 @@ export default defineComponent({
       clock: typeof performance === 'undefined' ? Date : performance,
       reqId: null, // requestAnimationFrame id,
       loader: null, // 会被具体实现的组件覆盖
+      loadingBarElement: null,
+      progressRatio: 0, // 整体的加载进度（包括模型、贴图等）
+      loadingManager: new LoadingManager(
+        // Loaded
+        () => {
+          this.progress.endedAt = Date.now();
+
+          gsap.delayedCall(0.5, () => {
+            gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+
+            if (this.loadingBarElement) {
+              this.loadingBarElement.style.transform = 'scaleX(0)';
+              this.loadingBarElement.style.transformOrigin = 'top right';
+              this.loadingBarElement.style.transition = 'transform 1.5s ease-in-out';
+              const that = this;
+              // 添加transform结束事件的监听器
+              this.loadingBarElement.addEventListener('transitionend', function (event) {
+                // 检查是否是对transform属性的过渡效果结束
+                if (event.propertyName === 'transform') {
+                  // 执行相应的回调操作
+                  that.progress.isComplete = true;
+                }
+              });
+            } else {
+              this.progress.isComplete = true;
+            }
+          });
+        },
+
+        // Progress, 下载完以后的加载进度
+        (itemUrl, itemsLoaded, itemsTotal) => {
+          const progressRatio = (itemsLoaded / itemsTotal) * 100;
+          if (this.loadingBarElement) {
+            console.log(111, this.loadProgressPercentage);
+            console.log(222, progressRatio);
+            if (this.loadProgressPercentage === 92 && progressRatio > this.loadProgressPercentage) {
+              this.loadingBarElement.style.transform = `scaleX(${progressRatio}%)`;
+            }
+          }
+        }
+      ),
+      overlayMaterial: new ShaderMaterial({
+        transparent: true,
+        uniforms: {
+          uAlpha: { value: 1 },
+        },
+        vertexShader: `
+          void main()
+          {
+              gl_Position = vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uAlpha;
+
+          void main()
+          {
+              gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+          }
+        `,
+      }),
     };
 
     // 确保这些对象不被转为 vue reactive 对象，避免 three 渲染出错
@@ -161,17 +242,35 @@ export default defineComponent({
   },
   computed: {
     loadProgressPercentage() {
-      if (this.progress.isComplete) return 100;
-      if (this.progress.lengthComputable) {
-        // lengthComputable 为 false 时，total 无直接参考意义，但是这里仍然使用它 * 3来作为估计值
-        // 因为 gzip 压缩后的长度大约为三分之一
-        return Math.min(0.92, this.progress.loaded / (this.progress.total * 3)) * 100;
-      }
+      const progress = (this.progress.loaded / this.progress.total) * 100;
+      if (isNaN(progress)) return 0;
+      if (progress == 100) return 99;
+      return progress;
 
-      return Math.min(1, this.progress.total > 0 ? this.progress.loaded / this.progress.total : 0) * 100;
+      // if (this.progress.isComplete) return 100;
+      // if (this.progress.lengthComputable) {
+      //   // lengthComputable 为 false 时，total 无直接参考意义，但是这里仍然使用它 * 3来作为估计值
+      //   // 因为 gzip 压缩后的长度大约为三分之一
+      //   return Math.min(0.92, this.progress.loaded / (this.progress.total * 3)) * 100;
+      // }
+      // return Math.min(1, this.progress.total > 0 ? this.progress.loaded / this.progress.total : 0) * 100;
     },
   },
   mounted() {
+    /**
+     * loadingBarElement
+     */
+    this.loadingBarElement = this.$refs.loadingBarElement;
+
+    /**
+     * Overlay
+     */
+    if (this.loadingBarElement) {
+      const overlayGeometry = new PlaneGeometry(2, 2, 1, 1);
+      const overlay = new Mesh(overlayGeometry, this.overlayMaterial);
+      this.scene.add(overlay);
+    }
+
     if (this.width === undefined || this.height === undefined) {
       this.size = {
         width: this.$refs.container.offsetWidth,
@@ -463,8 +562,10 @@ export default defineComponent({
         this.progress.loaded = 0;
         this.progress.total = 0;
       } else if (type === 'end') {
-        this.progress.isComplete = true;
-        this.progress.endedAt = Date.now();
+        // 此处表示下载资源完成，等待加载
+        // 加载完成后的逻辑交给LoadingManager的loaded事件处理
+        // this.progress.isComplete = true;
+        // this.progress.endedAt = Date.now();
       } else {
         this.progress.lengthComputable = data?.lengthComputable ?? false;
         this.progress.loaded = data?.loaded ?? 0;

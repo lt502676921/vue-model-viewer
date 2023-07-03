@@ -31,7 +31,7 @@ export default defineComponent({
   },
   data() {
     return {
-      loader: new XYZLoader(),
+      loader: new XYZLoader(this.loadingManager),
     };
   },
   methods: {
