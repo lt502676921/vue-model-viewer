@@ -192,7 +192,7 @@ export default defineComponent({
           const progressRatio = (itemsLoaded / itemsTotal) * 100;
           if (this.loadingBarElement) {
             if (progressRatio == 100) {
-              this.loadingBarElement.style.transform = 'scaleX(100%)';
+              this.progress.isProgressComplete = true;
             }
           }
         }
@@ -231,6 +231,7 @@ export default defineComponent({
         isComplete: false,
         lengthComputable: false,
         loaded: 0,
+        isProgressComplete: false, // 只用来控制进度条
       },
     };
 
@@ -239,18 +240,18 @@ export default defineComponent({
   },
   computed: {
     loadProgressPercentage() {
-      const progress = (this.progress.loaded / this.progress.total) * 100;
-      if (isNaN(progress)) return 0;
-      if (progress > 99) return 99;
-      return progress;
-
-      // if (this.progress.isComplete) return 100;
-      // if (this.progress.lengthComputable) {
-      //   // lengthComputable 为 false 时，total 无直接参考意义，但是这里仍然使用它 * 3来作为估计值
-      //   // 因为 gzip 压缩后的长度大约为三分之一
-      //   return Math.min(0.92, this.progress.loaded / (this.progress.total * 3)) * 100;
-      // }
-      // return Math.min(1, this.progress.total > 0 ? this.progress.loaded / this.progress.total : 0) * 100;
+      if (this.progress.isProgressComplete) return 100;
+      if (this.progress.lengthComputable) {
+        // lengthComputable 为 false 时，total 无直接参考意义，但是这里仍然使用它 * 3来作为估计值
+        // 因为 gzip 压缩后的长度大约为三分之一
+        return Math.min(0.92, this.progress.loaded / (this.progress.total * 3)) * 100;
+      }
+      return (
+        Math.min(
+          1,
+          isNaN(this.progress.loaded / this.progress.total) ? 0 : this.progress.loaded / this.progress.total
+        ) * 100
+      );
     },
   },
   mounted() {

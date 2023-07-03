@@ -1,6 +1,6 @@
 {
   "name": "@aeonlabs/vue-model-viewer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/vue-model-viewer.cjs.js",
   "files": [
@@ -27,5 +27,8 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "vite": "^4.3.9",
     "vue": "^3.3.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
