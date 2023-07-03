@@ -160,41 +160,41 @@ export default defineComponent({
       reqId: null, // requestAnimationFrame id,
       loader: null, // 会被具体实现的组件覆盖
       loadingBarElement: null,
-      progressRatio: 0, // 整体的加载进度（包括模型、贴图等）
       loadingManager: new LoadingManager(
         // Loaded
         () => {
-          this.progress.endedAt = Date.now();
+          console.log('loaded');
+          this.loadingBarElement.style.transform = 'scaleX(100%)';
 
           gsap.delayedCall(0.5, () => {
             gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
 
             if (this.loadingBarElement) {
-              this.loadingBarElement.style.transform = 'scaleX(0)';
               this.loadingBarElement.style.transformOrigin = 'top right';
               this.loadingBarElement.style.transition = 'transform 1.5s ease-in-out';
+              this.loadingBarElement.style.transform = 'scaleX(0)';
               const that = this;
               // 添加transform结束事件的监听器
               this.loadingBarElement.addEventListener('transitionend', function (event) {
                 // 检查是否是对transform属性的过渡效果结束
                 if (event.propertyName === 'transform') {
                   // 执行相应的回调操作
-                  that.progress.isComplete = true;
+                  // that.progress.isComplete = true;
                 }
               });
             } else {
-              this.progress.isComplete = true;
+              // this.progress.isComplete = true;
             }
           });
         },
 
         // Progress, 下载完以后的加载进度
         (itemUrl, itemsLoaded, itemsTotal) => {
+          console.log('onProgress');
+
           const progressRatio = (itemsLoaded / itemsTotal) * 100;
           if (this.loadingBarElement) {
-            console.log(111, this.loadProgressPercentage);
-            console.log(222, progressRatio);
-            if (this.loadProgressPercentage === 92 && progressRatio > this.loadProgressPercentage) {
+            if (progressRatio > this.loadProgressPercentage) {
               this.loadingBarElement.style.transform = `scaleX(${progressRatio}%)`;
             }
           }
@@ -242,9 +242,10 @@ export default defineComponent({
   },
   computed: {
     loadProgressPercentage() {
+      console.log('loadProgressPercentage');
       const progress = (this.progress.loaded / this.progress.total) * 100;
       if (isNaN(progress)) return 0;
-      if (progress == 100) return 99;
+      if (progress > 99) return 99;
       return progress;
 
       // if (this.progress.isComplete) return 100;
@@ -562,10 +563,8 @@ export default defineComponent({
         this.progress.loaded = 0;
         this.progress.total = 0;
       } else if (type === 'end') {
-        // 此处表示下载资源完成，等待加载
-        // 加载完成后的逻辑交给LoadingManager的loaded事件处理
-        // this.progress.isComplete = true;
-        // this.progress.endedAt = Date.now();
+        this.progress.isComplete = true;
+        this.progress.endedAt = Date.now();
       } else {
         this.progress.lengthComputable = data?.lengthComputable ?? false;
         this.progress.loaded = data?.loaded ?? 0;
