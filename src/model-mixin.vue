@@ -160,7 +160,6 @@ export default defineComponent({
       reqId: null, // requestAnimationFrame id,
       loader: null, // 会被具体实现的组件覆盖
       loadingBarElement: null,
-      progressRatio: null,
       loadingManager: new LoadingManager(
         // Loaded
         () => {
@@ -191,14 +190,9 @@ export default defineComponent({
         // Progress, 下载完以后的加载进度
         (itemUrl, itemsLoaded, itemsTotal) => {
           const progressRatio = (itemsLoaded / itemsTotal) * 100;
-          this.progressRatio = progressRatio;
           if (this.loadingBarElement) {
             if (progressRatio == 100) {
               this.loadingBarElement.style.transform = 'scaleX(100%)';
-              return;
-            }
-            if (progressRatio > this.loadProgressPercentage) {
-              this.loadingBarElement.style.transform = `scaleX(${progressRatio}%)`;
             }
           }
         }
@@ -247,7 +241,6 @@ export default defineComponent({
     loadProgressPercentage() {
       const progress = (this.progress.loaded / this.progress.total) * 100;
       if (isNaN(progress)) return 0;
-      if (this.progressRatio > progress) return this.progressRatio;
       if (progress > 99) return 99;
       return progress;
 
