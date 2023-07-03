@@ -1,11 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { XYZLoader } from 'three/examples/jsm/loaders/XYZLoader';
-import {
-  Mesh,
-  MeshStandardMaterial,
-  BufferGeometry
-} from 'three';
+import { Mesh, MeshStandardMaterial, BufferGeometry } from 'three';
 import mixin from './model-mixin.vue';
 
 export default defineComponent({

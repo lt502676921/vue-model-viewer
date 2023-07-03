@@ -47,18 +47,23 @@ export default defineComponent({
       }
 
       this.reportProgress('start');
-      this.loader.load(this.src, (data) => {
-        this.reportProgress('end');
-        this.addObject(data.scene);
+      this.loader.load(
+        this.src,
+        data => {
+          this.reportProgress('end');
+          this.addObject(data.scene);
 
-        this.$emit('load');
-      }, event => {
-        this.reportProgress('progress', event);
-        this.$emit('progress', event);
-      }, event => {
-        this.reportProgress('end');
-        this.$emit('error', event);
-      });
+          this.$emit('load');
+        },
+        event => {
+          this.reportProgress('progress', event);
+          this.$emit('progress', event);
+        },
+        event => {
+          this.reportProgress('end');
+          this.$emit('error', event);
+        }
+      );
     },
   },
 });

@@ -1,11 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
-import {
-  Mesh,
-  MeshStandardMaterial,
-  BufferGeometry
-} from 'three';
+import { Mesh, MeshStandardMaterial, BufferGeometry } from 'three';
 import mixin from './model-mixin.vue';
 
 export default defineComponent({

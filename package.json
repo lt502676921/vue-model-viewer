@@ -1,8 +1,8 @@
 {
   "name": "aeonlabs-vue-model-viewer",
-  "version": "0.0.5",
+  "version": "0.0.14",
   "description": "",
-  "main": "dist/vue-3d-model.cjs.js",
+  "main": "dist/vue-model-viewer.cjs.js",
   "files": [
     "dist",
     "src",
@@ -20,6 +20,7 @@
     "vue": ">=3.0.0"
   },
   "dependencies": {
+    "gsap": "3.5.1",
     "three": "^0.153.0"
   },
   "devDependencies": {

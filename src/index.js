@@ -32,15 +32,15 @@ const components = [
   ModelCollada,
   ModelDae,
   ModelGltf,
-  ModelXyz
+  ModelXyz,
 ];
 
 const INSTALLED_KEY = Symbol('VUE_3D_MODEL_INSTALLED');
 
 /* eslint-disable no-shadow */
-const install = (app) => {
-  if ((app)[INSTALLED_KEY]) return;
-  components.forEach((component) => {
+const install = app => {
+  if (app[INSTALLED_KEY]) return;
+  components.forEach(component => {
     app.component(component.name, component);
   });
 };
@@ -56,7 +56,7 @@ export default {
   ModelCollada,
   ModelDae,
   ModelGltf,
-  ModelXyz
+  ModelXyz,
 };
 
 export {
@@ -70,5 +70,5 @@ export {
   ModelCollada,
   ModelDae,
   ModelGltf,
-  ModelXyz
+  ModelXyz,
 };

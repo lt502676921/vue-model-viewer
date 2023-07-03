@@ -10,9 +10,9 @@ export default defineConfig({
     lib: {
       formats: ['es', 'cjs', 'iife'],
       entry: path.resolve(__dirname, 'src/index.js'),
-      name: 'Vue3DModel',
-      fileName: (format) => {
-        const fileNamePrefix = 'vue-3d-model';
+      name: 'VueModelViewer',
+      fileName: format => {
+        const fileNamePrefix = 'vue-model-viewer';
         if (format === 'es') {
           return `${fileNamePrefix}.esm.js`;
         }
@@ -20,15 +20,15 @@ export default defineConfig({
           return `${fileNamePrefix}.global.js`;
         }
         return `${fileNamePrefix}.${format}.js`;
-      }
+      },
     },
     rollupOptions: {
       external: ['vue'],
       output: {
         globals: {
-          vue: 'Vue'
-        }
-      }
-    }
-  }
-})
+          vue: 'Vue',
+        },
+      },
+    },
+  },
+});

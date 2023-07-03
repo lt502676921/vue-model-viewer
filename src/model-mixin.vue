@@ -1,16 +1,7 @@
 <template>
-  <div
-    style="position: relative; width: 100%; height: 100%; margin: 0; border: 0; padding: 0;"
-    ref="container"
-  >
-    <slot
-      name="progress-bar"
-      :progress="progress"
-      v-if="progress.isComplete === false"
-    >
-      <div
-        style="position: absolute; z-index: 2; height: 3px; width: 100%; background-color: rgba(0, 0, 0, 0.04)"
-      >
+  <div style="position: relative; width: 100%; height: 100%; margin: 0; border: 0; padding: 0" ref="container">
+    <slot name="progress-bar" :progress="progress" v-if="progress.isComplete === false">
+      <div style="position: absolute; z-index: 2; height: 3px; width: 100%; background-color: rgba(0, 0, 0, 0.04)">
         <div
           :style="{
             width: `${loadProgressPercentage}%`,
@@ -21,18 +12,14 @@
         />
       </div>
     </slot>
-    <div
-      v-if="progress.isComplete === false"
-      style="position: absolute; z-index: 1; width: 100%; height: 100%;"
-    >
+    <div v-if="progress.isComplete === false" style="position: absolute; z-index: 1; width: 100%; height: 100%">
       <slot name="poster" />
     </div>
-    <canvas ref="canvas" style="width: 100%; height: 100%;"></canvas>
+    <canvas ref="canvas" style="width: 100%; height: 100%"></canvas>
   </div>
 </template>
 
 <script>
-
 import {
   Object3D,
   Vector2,
@@ -60,7 +47,6 @@ const DEFAULT_GL_OPTIONS = {
 };
 
 export default defineComponent({
-  
   props: {
     src: {
       type: String,
@@ -152,7 +138,7 @@ export default defineComponent({
       allLights: [],
       clock: typeof performance === 'undefined' ? Date : performance,
       reqId: null, // requestAnimationFrame id,
-      loader: null,  // 会被具体实现的组件覆盖
+      loader: null, // 会被具体实现的组件覆盖
     };
 
     // 确保这些对象不被转为 vue reactive 对象，避免 three 渲染出错
@@ -168,7 +154,7 @@ export default defineComponent({
         lengthComputable: false,
         loaded: 0,
       },
-    }
+    };
 
     // 为了保留类型信息，仍然返回 result 的 type
     return reactiveState;
@@ -183,30 +169,25 @@ export default defineComponent({
       }
 
       return Math.min(1, this.progress.total > 0 ? this.progress.loaded / this.progress.total : 0) * 100;
-    }
+    },
   },
   mounted() {
     if (this.width === undefined || this.height === undefined) {
       this.size = {
-        width: (this.$refs.container).offsetWidth,
-        height: (this.$refs.container).offsetHeight,
+        width: this.$refs.container.offsetWidth,
+        height: this.$refs.container.offsetHeight,
       };
     }
 
-    const options = Object.assign(
-      {},
-      DEFAULT_GL_OPTIONS,
-      this.glOptions,
-      {
-        canvas: this.$refs.canvas,
-      }
-    );
+    const options = Object.assign({}, DEFAULT_GL_OPTIONS, this.glOptions, {
+      canvas: this.$refs.canvas,
+    });
 
     this.renderer = new WebGLRenderer(options);
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputEncoding = this.outputEncoding;
 
-    this.controls = new OrbitControls(this.camera, (this.$refs.container));
+    this.controls = new OrbitControls(this.camera, this.$refs.container);
     // this.controls.type = 'orbit';
 
     this.scene.add(this.wrapper);
@@ -301,8 +282,8 @@ export default defineComponent({
       if (this.width === undefined || this.height === undefined) {
         this.$nextTick(() => {
           this.size = {
-            width: (this.$refs.container).offsetWidth,
-            height: (this.$refs.container).offsetHeight,
+            width: this.$refs.container.offsetWidth,
+            height: this.$refs.container.offsetHeight,
           };
         });
       }
@@ -314,7 +295,7 @@ export default defineComponent({
       this.$emit('mousedown', event, intersected);
     },
     onMouseMove(event) {
-      console.log(this.$attrs)
+      // console.log(this.$attrs);
       if (!this.$attrs.onMousemove) return;
 
       const intersected = this.pick(event.clientX, event.clientY);
@@ -342,7 +323,7 @@ export default defineComponent({
       if (!this.object) return null;
       if (!this.$refs.container) return;
 
-      const rect = (this.$refs.container).getBoundingClientRect();
+      const rect = this.$refs.container.getBoundingClientRect();
 
       x -= rect.left;
       y -= rect.top;
@@ -416,7 +397,7 @@ export default defineComponent({
 
       this.allLights = [];
 
-      this.lights.forEach((item) => {
+      this.lights.forEach(item => {
         if (!item.type) return;
 
         const type = item.type.toLowerCase();
@@ -450,7 +431,7 @@ export default defineComponent({
           }
 
           if (item.target) {
-            (light).target.copy(item.target);
+            light.target.copy(item.target);
           }
         } else if (type === 'hemisphere' || type === 'hemispherelight') {
           const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
@@ -501,23 +482,28 @@ export default defineComponent({
 
       this.reportProgress('start');
 
-      (this.loader).load(this.src, (...args) => {
-        this.reportProgress('end');
+      this.loader.load(
+        this.src,
+        (...args) => {
+          this.reportProgress('end');
 
-        const object = (this.getObject)(...args);
+          const object = this.getObject(...args);
 
-        this.process(object);
+          this.process(object);
 
-        this.addObject(object);
+          this.addObject(object);
 
-        this.$emit('load');
-      }, (event) => {
-        this.reportProgress('progress', event);
-        this.$emit('progress', event);
-      }, (event) => {
-        this.reportProgress('end');
-        this.$emit('error', event);
-      });
+          this.$emit('load');
+        },
+        event => {
+          this.reportProgress('progress', event);
+          this.$emit('progress', event);
+        },
+        event => {
+          this.reportProgress('end');
+          this.$emit('error', event);
+        }
+      );
     },
     process(object) {
       return object;
@@ -546,5 +532,4 @@ export default defineComponent({
     },
   },
 });
-
 </script>

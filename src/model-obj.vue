@@ -9,7 +9,7 @@ import { toIndexed } from './utils';
 import mixin from './model-mixin.vue';
 
 // TODO: Better way to handle texture formats
-const manager = (new LoadingManager()); // 0.122+ new api
+const manager = new LoadingManager(); // 0.122+ new api
 manager.addHandler(/\.dds$/i, new DDSLoader());
 
 export default defineComponent({
@@ -68,7 +68,7 @@ export default defineComponent({
   methods: {
     process(object) {
       if (this.smoothing) {
-        object.traverse((child) => {
+        object.traverse(child => {
           if (child.geometry) {
             child.geometry = toIndexed(child.geometry);
             child.geometry.computeVertexNormals();
@@ -83,7 +83,7 @@ export default defineComponent({
         this.wrapper.remove(this.object);
       }
 
-      const onLoad = (object) => {
+      const onLoad = object => {
         this.reportProgress('end');
         if (this.process) {
           this.process(object);
@@ -94,12 +94,12 @@ export default defineComponent({
         this.$emit('load');
       };
 
-      const onProgress = (event) => {
+      const onProgress = event => {
         this.reportProgress('progress', event);
         this.$emit('progress', event);
       };
 
-      const onError = (event) => {
+      const onError = event => {
         this.reportProgress('end');
         this.$emit('error', event);
       };
@@ -123,13 +123,16 @@ export default defineComponent({
           this.mtlLoader.setPath(mtlPath);
         }
 
-        this.mtlLoader.load(mtlSrc, (materials) => {
-          materials.preload();
+        this.mtlLoader.load(
+          mtlSrc,
+          materials => {
+            materials.preload();
 
-          this.loader
-            .setMaterials(materials)
-            .load(this.src, onLoad, onProgress, onError);
-        }, () => {}, onError);
+            this.loader.setMaterials(materials).load(this.src, onLoad, onProgress, onError);
+          },
+          () => {},
+          onError
+        );
       } else {
         this.loader.load(this.src, onLoad, onProgress, onError);
       }

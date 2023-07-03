@@ -1,11 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-import {
-  Mesh,
-  MeshPhongMaterial,
-  BufferGeometry,
-} from 'three';
+import { Mesh, MeshPhongMaterial, BufferGeometry } from 'three';
 import mixin from './model-mixin.vue';
 
 export default defineComponent({

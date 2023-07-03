@@ -2,11 +2,13 @@ lockfileVersion: 5.4
 
 specifiers:
   '@vitejs/plugin-vue': ^4.2.3
+  gsap: 3.5.1
   three: ^0.153.0
   vite: ^4.3.9
   vue: ^3.3.4
 
 dependencies:
+  gsap: 3.5.1
   three: 0.153.0
 
 devDependencies:
@@ -384,6 +386,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /gsap/3.5.1:
+    resolution: {integrity: sha512-EMV0RSUKZNeTUzLKAizGlwxVOUyif3/g8I3S1aA/hf3gbqwBvmQ02x1RdTBQNQMOpHCVBv9y/vaHwfctoAg8zw==}
+    dev: false
 
   /magic-string/0.30.0:
     resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
