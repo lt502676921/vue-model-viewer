@@ -255,20 +255,6 @@ export default defineComponent({
     },
   },
   mounted() {
-    /**
-     * loadingBarElement
-     */
-    this.loadingBarElement = this.$refs.loadingBarElement;
-
-    /**
-     * Overlay
-     */
-    if (this.loadingBarElement) {
-      const overlayGeometry = new PlaneGeometry(2, 2, 1, 1);
-      const overlay = new Mesh(overlayGeometry, this.overlayMaterial);
-      this.scene.add(overlay);
-    }
-
     if (this.width === undefined || this.height === undefined) {
       this.size = {
         width: this.$refs.container.offsetWidth,
@@ -286,6 +272,20 @@ export default defineComponent({
 
     this.controls = new OrbitControls(this.camera, this.$refs.container);
     // this.controls.type = 'orbit';
+
+    /**
+     * loadingBarElement
+     */
+    this.loadingBarElement = this.$refs.loadingBarElement;
+
+    /**
+     * Overlay
+     */
+    if (this.loadingBarElement) {
+      const overlayGeometry = new PlaneGeometry(2, 2, 1, 1);
+      const overlay = new Mesh(overlayGeometry, this.overlayMaterial);
+      this.scene.add(overlay);
+    }
 
     this.scene.add(this.wrapper);
 
