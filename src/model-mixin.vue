@@ -92,7 +92,7 @@
     <div v-if="progress.isComplete === false" style="position: absolute; z-index: 1; width: 100%; height: 100%">
       <slot name="poster" />
     </div>
-    <canvas ref="canvas" style="width: 100%; height: 100%" @mousedown="play" @mousewheel="play"></canvas>
+    <canvas ref="canvas" style="width: 100%; height: 100%" @mousedown="play" @mousewheel="play" @touchstart="play"></canvas>
   </div>
 </template>
 
@@ -774,7 +774,8 @@ export default defineComponent({
         // this.scene.updateTarget(delta);
       }
     },
-    play() {
+    play(event) {
+      console.log(event);
       this.isPlayed = true;
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
