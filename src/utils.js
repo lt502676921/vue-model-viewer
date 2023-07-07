@@ -1,11 +1,4 @@
-import {
-  Box3,
-  Vector3,
-  Vector2,
-  BufferAttribute,
-  Object3D,
-  BufferGeometry,
-} from 'three';
+import { Box3, Vector3, Vector2, BufferAttribute, Object3D, BufferGeometry } from 'three';
 
 const box = new Box3();
 
@@ -162,4 +155,14 @@ function toIndexed(bufferGeometry) {
   }
 }
 
-export { getSize, getCenter, toIndexed };
+/**
+ * @param {Number} value
+ * @param {Number} lowerLimit
+ * @param {Number} upperLimit
+ * @return {Number} value clamped within lowerLimit..upperLimit
+ */
+function clamp(value, lowerLimit, upperLimit) {
+  return Math.max(lowerLimit, Math.min(upperLimit, value));
+}
+
+export { getSize, getCenter, toIndexed, clamp };

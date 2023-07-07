@@ -1,6 +1,6 @@
 {
   "name": "@aeonlabs/vue-model-viewer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "dist/vue-model-viewer.cjs.js",
   "files": [
@@ -11,6 +11,7 @@
     "README.md"
   ],
   "scripts": {
+    "dev": "vite build --watch",
     "build": "vite build"
   },
   "keywords": [],
