@@ -491,6 +491,7 @@ export default defineComponent({
   },
   methods: {
     onResize() {
+      if (!this.$refs.container) return
       if (this.width === undefined || this.height === undefined) {
         this.$nextTick(() => {
           this.size = {
