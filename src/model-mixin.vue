@@ -776,7 +776,6 @@ export default defineComponent({
       }
     },
     play(event) {
-      console.log(event);
       this.isPlayed = true;
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
