@@ -257,7 +257,9 @@ export default defineComponent({
         () => {
           this.progress.endedAt = Date.now();
           this.promptElementVisibleTime = performance.now();
-          this.$refs['interaction-prompt'].style.opacity = 1;
+          if (this.$refs['interaction-prompt']) {
+            this.$refs['interaction-prompt'].style.opacity = 1;
+          }
 
           gsap.delayedCall(0.5, () => {
             gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
@@ -419,7 +421,7 @@ export default defineComponent({
 
     this.animate();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     cancelAnimationFrame(this.reqId);
 
     this.renderer.dispose();
