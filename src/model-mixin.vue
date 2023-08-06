@@ -103,7 +103,7 @@ import {
   Vector3,
   Color,
   Scene,
-  Light,
+  // Light,
   Raycaster,
   WebGLRenderer,
   PerspectiveCamera,
@@ -111,8 +111,8 @@ import {
   PointLight,
   HemisphereLight,
   DirectionalLight,
-  LinearEncoding,
-  Loader,
+  LinearSRGBColorSpace,
+  // Loader,
   LoadingManager,
   ShaderMaterial,
   PlaneGeometry,
@@ -224,9 +224,9 @@ export default defineComponent({
       type: Object,
       default: () => {},
     },
-    outputEncoding: {
-      type: Number,
-      default: LinearEncoding,
+    outputColorSpace: {
+      type: String,
+      default: LinearSRGBColorSpace,
     },
     glOptions: {
       type: Object,
@@ -262,7 +262,7 @@ export default defineComponent({
           }
 
           gsap.delayedCall(0.5, () => {
-            gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+            gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, onComplete: () => this.overlayMaterial.visible = false });
 
             if (this.loadingBarElement) {
               this.loadingBarElement.style.transformOrigin = 'top right';
@@ -385,7 +385,7 @@ export default defineComponent({
 
     this.renderer = new WebGLRenderer(options);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.outputEncoding = this.outputEncoding;
+    this.renderer.outputColorSpace = this.outputColorSpace;
 
     this.controls = new OrbitControls(this.camera, this.$refs.container);
     // this.controls.type = 'orbit';

@@ -1,10 +1,10 @@
 <script>
 import { defineComponent } from 'vue';
-import { Object3D } from 'three';
+// import { Object3D } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader';
-import { LoadingManager } from 'three/src/loaders/LoadingManager';
+// import { LoadingManager } from 'three/src/loaders/LoadingManager';
 import { toIndexed } from './utils';
 import mixin from './model-mixin.vue';
 
