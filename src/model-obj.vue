@@ -76,11 +76,11 @@ export default defineComponent({
       }
     },
     load() {
-      if (!this.src) return;
-
       if (this.object) {
         this.wrapper.remove(this.object);
       }
+
+      if (!this.src) return;
 
       const onLoad = object => {
         this.reportProgress('end');
