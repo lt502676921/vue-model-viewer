@@ -38,6 +38,8 @@ export default defineComponent({
     getObject(geometry) {
       geometry.computeVertexNormals();
 
+      geometry.center();
+
       return new Mesh(geometry, new MeshStandardMaterial());
     },
   },
