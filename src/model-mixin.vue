@@ -92,7 +92,13 @@
     <div v-if="progress.isComplete === false" style="position: absolute; z-index: 1; width: 100%; height: 100%">
       <slot name="poster" />
     </div>
-    <canvas ref="canvas" style="width: 100%; height: 100%" @mousedown="play" @mousewheel="play" @touchstart="play"></canvas>
+    <canvas
+      ref="canvas"
+      style="width: 100%; height: 100%"
+      @mousedown="play"
+      @mousewheel="play"
+      @touchstart="play"
+    ></canvas>
   </div>
 </template>
 
@@ -262,7 +268,11 @@ export default defineComponent({
           }
 
           gsap.delayedCall(0.5, () => {
-            gsap.to(this.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, onComplete: () => this.overlayMaterial.visible = false });
+            gsap.to(this.overlayMaterial.uniforms.uAlpha, {
+              duration: 3,
+              value: 0,
+              onComplete: () => (this.overlayMaterial.visible = false),
+            });
 
             if (this.loadingBarElement) {
               this.loadingBarElement.style.transformOrigin = 'top right';
@@ -493,7 +503,7 @@ export default defineComponent({
   },
   methods: {
     onResize() {
-      if (!this.$refs.container) return
+      if (!this.$refs.container) return;
       if (this.width === undefined || this.height === undefined) {
         this.$nextTick(() => {
           this.size = {
@@ -706,6 +716,13 @@ export default defineComponent({
           this.reportProgress('end');
 
           const object = this.getObject(...args);
+
+          object.traverse(child => {
+            if (child.isMesh) {
+              child.material.roughness = 0.4;
+              child.material.needsUpdate = true;
+            }
+          });
 
           this.process(object);
 
