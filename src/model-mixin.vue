@@ -717,13 +717,6 @@ export default defineComponent({
 
           const object = this.getObject(...args);
 
-          object.traverse(child => {
-            if (child.isMesh) {
-              child.material.roughness = 0.4;
-              child.material.needsUpdate = true;
-            }
-          });
-
           this.process(object);
 
           this.addObject(object);

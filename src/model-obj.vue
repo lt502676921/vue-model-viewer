@@ -1,6 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 // import { Object3D } from 'three';
+import { MeshPhysicalMaterial } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader';
@@ -83,6 +84,19 @@ export default defineComponent({
       if (!this.src) return;
 
       const onLoad = object => {
+        object.traverse(child => {
+          if (child.isMesh) {
+            const temp = child.material;
+            child.castShadow = true;
+            child.receiveShadow = true;
+            child.material = new MeshPhysicalMaterial({ map: temp.map });
+            child.material.roughness = 0.4;
+            child.material.needsUpdate = true;
+          }
+        });
+
+        console.log('obj material', object);
+
         this.reportProgress('end');
         if (this.process) {
           this.process(object);

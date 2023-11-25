@@ -1,5 +1,6 @@
 <script>
 import { defineComponent } from 'vue';
+import { MeshPhysicalMaterial } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import mixin from './model-mixin.vue';
 
@@ -50,6 +51,19 @@ export default defineComponent({
       this.loader.load(
         this.src,
         data => {
+          data.scene.traverse(child => {
+            if (child.isMesh) {
+              const temp = child.material;
+              child.castShadow = true;
+              child.receiveShadow = true;
+              child.material = new MeshPhysicalMaterial({ map: temp.map });
+              child.material.roughness = 0.4;
+              child.material.needsUpdate = true;
+            }
+          });
+
+          console.log('gltf material', data);
+
           this.reportProgress('end');
           this.addObject(data.scene);
 
