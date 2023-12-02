@@ -123,7 +123,10 @@ import {
   ShaderMaterial,
   PlaneGeometry,
   Mesh,
+  PMREMGenerator
 } from 'three';
+import * as THREE from 'three'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { gsap } from 'gsap';
 import { getSize, getCenter } from './utils';
@@ -396,6 +399,8 @@ export default defineComponent({
     this.renderer = new WebGLRenderer(options);
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputColorSpace = this.outputColorSpace;
+    this.renderer.toneMapping = THREE.ReinhardToneMapping;
+    this.renderer.toneMappingExposure = 2.3;
 
     this.controls = new OrbitControls(this.camera, this.$refs.container);
     // this.controls.type = 'orbit';
@@ -619,63 +624,86 @@ export default defineComponent({
       }
     },
     updateLights() {
+      console.log('updateLights');
       this.scene.remove(...this.allLights);
 
-      this.allLights = [];
+      this.scene.add(new THREE.HemisphereLight(0xffeeb1, 0x080820, 4))
 
-      this.lights.forEach(item => {
-        if (!item.type) return;
+      const spotLight = new THREE.SpotLight(0xffa95c, 4);
+      spotLight.castShadow = true;
+      spotLight.shadow.bias = -0.0001
+      spotLight.shadow.mapSize.width = 1024*4;
+      spotLight.shadow.mapSize.height = 1024*4;
+      this.scene.add(spotLight)
 
-        const type = item.type.toLowerCase();
+      if (this && this.renderer) {
+        let that = this
+        new RGBELoader().load('https://user-images-1310094445.cos.ap-beijing.myqcloud.com/venice_sunset_1k.hdr', function (texture) {
+          const gen = new PMREMGenerator(that.renderer);
+          const envMap = gen.fromEquirectangular(texture).texture;
+          envMap.colorSpace = THREE.SRGBColorSpace;
+          envMap.material = THREE.EquirectangularReflectionMapping;
+          that.scene.environment = envMap;
+          // scene.background = envMap;
+        });
+      }
+     
 
-        let light = null;
+      // this.allLights = [];
 
-        if (type === 'ambient' || type === 'ambientlight') {
-          const color = item.color === 0x000000 ? item.color : item.color || 0x404040;
-          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+      // this.lights.forEach(item => {
+      //   if (!item.type) return;
 
-          light = new AmbientLight(color, intensity);
-        } else if (type === 'point' || type === 'pointlight') {
-          const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
-          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
-          const distance = item.distance || 0;
-          const decay = item.decay === 0 ? item.decay : item.decay || 1;
+      //   const type = item.type.toLowerCase();
 
-          light = new PointLight(color, intensity, distance, decay);
+      //   let light = null;
 
-          if (item.position) {
-            light.position.copy(item.position);
-          }
-        } else if (type === 'directional' || type === 'directionallight') {
-          const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
-          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+      //   if (type === 'ambient' || type === 'ambientlight') {
+      //     const color = item.color === 0x000000 ? item.color : item.color || 0x404040;
+      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
 
-          light = new DirectionalLight(color, intensity);
+      //     light = new AmbientLight(color, intensity);
+      //   } else if (type === 'point' || type === 'pointlight') {
+      //     const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
+      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+      //     const distance = item.distance || 0;
+      //     const decay = item.decay === 0 ? item.decay : item.decay || 1;
 
-          if (item.position) {
-            light.position.copy(item.position);
-          }
+      //     light = new PointLight(color, intensity, distance, decay);
 
-          if (item.target) {
-            light.target.copy(item.target);
-          }
-        } else if (type === 'hemisphere' || type === 'hemispherelight') {
-          const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
-          const groundColor = item.groundColor === 0x000000 ? item.groundColor : item.groundColor || 0xffffff;
-          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+      //     if (item.position) {
+      //       light.position.copy(item.position);
+      //     }
+      //   } else if (type === 'directional' || type === 'directionallight') {
+      //     const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
+      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
 
-          light = new HemisphereLight(skyColor, groundColor, intensity);
+      //     light = new DirectionalLight(color, intensity);
 
-          if (item.position) {
-            light.position.copy(item.position);
-          }
-        }
+      //     if (item.position) {
+      //       light.position.copy(item.position);
+      //     }
 
-        if (light) {
-          this.allLights.push(light);
-          this.scene.add(light);
-        }
-      });
+      //     if (item.target) {
+      //       light.target.copy(item.target);
+      //     }
+      //   } else if (type === 'hemisphere' || type === 'hemispherelight') {
+      //     const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
+      //     const groundColor = item.groundColor === 0x000000 ? item.groundColor : item.groundColor || 0xffffff;
+      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+
+      //     light = new HemisphereLight(skyColor, groundColor, intensity);
+
+      //     if (item.position) {
+      //       light.position.copy(item.position);
+      //     }
+      //   }
+
+      //   if (light) {
+      //     this.allLights.push(light);
+      //     this.scene.add(light);
+      //   }
+      // });
     },
     updateControls() {
       if (this.controlsOptions) {

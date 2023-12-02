@@ -57,12 +57,13 @@ export default defineComponent({
               child.castShadow = true;
               child.receiveShadow = true;
               child.material = new MeshPhysicalMaterial({ map: temp.map });
+              if (child.material.map) child.material.map.anisotropy = 16;
               child.material.roughness = 0.4;
               child.material.needsUpdate = true;
             }
           });
 
-          console.log('gltf material', data);
+          console.log('version 27 gltf material', data);
 
           this.reportProgress('end');
           this.addObject(data.scene);
