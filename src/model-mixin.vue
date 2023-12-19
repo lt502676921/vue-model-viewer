@@ -97,8 +97,30 @@
       style="width: 100%; height: 100%"
       @mousedown="play"
       @mousewheel="play"
+      @pointerdown="play"
       @touchstart="play"
-    ></canvas>
+    />
+    <div
+      class="error-container"
+      v-if="isError"
+      style="
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+        color: #ffffff;
+      "
+    >
+      <div>Error loading the model,</div>
+      <div>please refresh the page.</div>
+    </div>
   </div>
 </template>
 
@@ -123,9 +145,12 @@ import {
   ShaderMaterial,
   PlaneGeometry,
   Mesh,
-  PMREMGenerator
+  PMREMGenerator,
 } from 'three';
-import * as THREE from 'three'
+import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { gsap } from 'gsap';
@@ -250,6 +275,7 @@ export default defineComponent({
       scene: new Scene(),
       wrapper: new Object3D(),
       renderer: null,
+      composer: null,
       controls: null,
       allLights: [],
       clock: typeof performance === 'undefined' ? Date : performance,
@@ -261,6 +287,7 @@ export default defineComponent({
       promptElementVisibleTime: Infinity,
       smoothControls: null,
       loadingBarElement: null,
+      isError: false, // 加载中是否出现错误
       loadingManager: new LoadingManager(
         // Loaded
         () => {
@@ -312,6 +339,11 @@ export default defineComponent({
               this.progress.isProgressComplete = true;
             }
           }
+        },
+
+        // Error
+        () => {
+          this.isError = true;
         }
       ),
       overlayMaterial: new ShaderMaterial({
@@ -402,7 +434,19 @@ export default defineComponent({
     this.renderer.toneMapping = THREE.ReinhardToneMapping;
     this.renderer.toneMappingExposure = 2.3;
 
+    // this.composer = new EffectComposer(this.renderer);
+    // this.composer.addPass(new RenderPass(this.scene, this.camera));
+    // const bloomPass = new UnrealBloomPass(new THREE.Vector2(this.size.width, this.size.height), 1.5, 0.4, 0.85);
+    // bloomPass.threshold = 0;
+    // bloomPass.strength = 0.19;
+    // bloomPass.radius = 0;
+    // this.composer.addPass(bloomPass);
+
     this.controls = new OrbitControls(this.camera, this.$refs.container);
+
+    this.controls.addEventListener('change', () => {
+      this.play();
+    });
     // this.controls.type = 'orbit';
 
     /**
@@ -582,14 +626,17 @@ export default defineComponent({
       const { rotation } = this;
       const { scale } = this;
 
+      const { x = 0, y = 0, z = 0 } = rotation;
+
       object.position.set(position.x, position.y, position.z);
-      object.rotation.set(rotation.x, rotation.y, rotation.z);
+      object.rotation.set(x, y, z);
       object.scale.set(scale.x, scale.y, scale.z);
     },
     updateRenderer() {
       const { renderer } = this;
 
       renderer.setSize(this.size.width, this.size.height);
+      // this.composer.setSize(this.size.width, this.size.height);
       renderer.setPixelRatio(window.devicePixelRatio || 1);
       renderer.setClearColor(new Color(this.backgroundColor).getHex());
       renderer.setClearAlpha(this.backgroundAlpha);
@@ -624,86 +671,87 @@ export default defineComponent({
       }
     },
     updateLights() {
-      console.log('updateLights');
       this.scene.remove(...this.allLights);
 
-      this.scene.add(new THREE.HemisphereLight(0xffeeb1, 0x080820, 4))
+      // this.scene.add(new THREE.HemisphereLight(0xffeeb1, 0x080820, 4));
 
-      const spotLight = new THREE.SpotLight(0xffa95c, 4);
-      spotLight.castShadow = true;
-      spotLight.shadow.bias = -0.0001
-      spotLight.shadow.mapSize.width = 1024*4;
-      spotLight.shadow.mapSize.height = 1024*4;
-      this.scene.add(spotLight)
+      // const spotLight = new THREE.SpotLight(0xffa95c, 4);
+      // spotLight.castShadow = true;
+      // spotLight.shadow.bias = -0.0001;
+      // spotLight.shadow.mapSize.width = 1024 * 4;
+      // spotLight.shadow.mapSize.height = 1024 * 4;
+      // this.scene.add(spotLight);
 
-      if (this && this.renderer) {
-        let that = this
-        new RGBELoader().load('https://user-images-1310094445.cos.ap-beijing.myqcloud.com/venice_sunset_1k.hdr', function (texture) {
-          const gen = new PMREMGenerator(that.renderer);
-          const envMap = gen.fromEquirectangular(texture).texture;
-          envMap.colorSpace = THREE.SRGBColorSpace;
-          envMap.material = THREE.EquirectangularReflectionMapping;
-          that.scene.environment = envMap;
-          // scene.background = envMap;
-        });
-      }
-     
-
-      // this.allLights = [];
-
-      // this.lights.forEach(item => {
-      //   if (!item.type) return;
-
-      //   const type = item.type.toLowerCase();
-
-      //   let light = null;
-
-      //   if (type === 'ambient' || type === 'ambientlight') {
-      //     const color = item.color === 0x000000 ? item.color : item.color || 0x404040;
-      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
-
-      //     light = new AmbientLight(color, intensity);
-      //   } else if (type === 'point' || type === 'pointlight') {
-      //     const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
-      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
-      //     const distance = item.distance || 0;
-      //     const decay = item.decay === 0 ? item.decay : item.decay || 1;
-
-      //     light = new PointLight(color, intensity, distance, decay);
-
-      //     if (item.position) {
-      //       light.position.copy(item.position);
+      // if (this && this.renderer) {
+      //   let that = this;
+      //   new RGBELoader().load(
+      //     'https://user-images-1310094445.cos.ap-beijing.myqcloud.com/venice_sunset_1k.hdr',
+      //     function (texture) {
+      //       const gen = new PMREMGenerator(that.renderer);
+      //       const envMap = gen.fromEquirectangular(texture).texture;
+      //       envMap.colorSpace = THREE.SRGBColorSpace;
+      //       envMap.material = THREE.EquirectangularReflectionMapping;
+      //       that.scene.environment = envMap;
+      //       // scene.background = envMap;
       //     }
-      //   } else if (type === 'directional' || type === 'directionallight') {
-      //     const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
-      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+      //   );
+      // }
 
-      //     light = new DirectionalLight(color, intensity);
+      this.allLights = [];
 
-      //     if (item.position) {
-      //       light.position.copy(item.position);
-      //     }
+      this.lights.forEach(item => {
+        if (!item.type) return;
 
-      //     if (item.target) {
-      //       light.target.copy(item.target);
-      //     }
-      //   } else if (type === 'hemisphere' || type === 'hemispherelight') {
-      //     const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
-      //     const groundColor = item.groundColor === 0x000000 ? item.groundColor : item.groundColor || 0xffffff;
-      //     const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+        const type = item.type.toLowerCase();
 
-      //     light = new HemisphereLight(skyColor, groundColor, intensity);
+        let light = null;
 
-      //     if (item.position) {
-      //       light.position.copy(item.position);
-      //     }
-      //   }
+        if (type === 'ambient' || type === 'ambientlight') {
+          const color = item.color === 0x000000 ? item.color : item.color || 0x404040;
+          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
 
-      //   if (light) {
-      //     this.allLights.push(light);
-      //     this.scene.add(light);
-      //   }
-      // });
+          light = new AmbientLight(color, intensity);
+        } else if (type === 'point' || type === 'pointlight') {
+          const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
+          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+          const distance = item.distance || 0;
+          const decay = item.decay === 0 ? item.decay : item.decay || 1;
+
+          light = new PointLight(color, intensity, distance, decay);
+
+          if (item.position) {
+            light.position.copy(item.position);
+          }
+        } else if (type === 'directional' || type === 'directionallight') {
+          const color = item.color === 0x000000 ? item.color : item.color || 0xffffff;
+          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+
+          light = new DirectionalLight(color, intensity);
+
+          if (item.position) {
+            light.position.copy(item.position);
+          }
+
+          if (item.target) {
+            light.target.copy(item.target);
+          }
+        } else if (type === 'hemisphere' || type === 'hemispherelight') {
+          const skyColor = item.skyColor === 0x000000 ? item.skyColor : item.skyColor || 0xffffff;
+          const groundColor = item.groundColor === 0x000000 ? item.groundColor : item.groundColor || 0xffffff;
+          const intensity = item.intensity === 0 ? item.intensity : item.intensity || 1;
+
+          light = new HemisphereLight(skyColor, groundColor, intensity);
+
+          if (item.position) {
+            light.position.copy(item.position);
+          }
+        }
+
+        if (light) {
+          this.allLights.push(light);
+          this.scene.add(light);
+        }
+      });
     },
     updateControls() {
       if (this.controlsOptions) {
@@ -785,6 +833,7 @@ export default defineComponent({
     },
     render() {
       this.renderer.render(this.scene, this.camera);
+      // this.composer.render();
     },
     startFingerGuideAnimation(t, frame) {
       const delta = t - this.lastTick;
@@ -817,6 +866,7 @@ export default defineComponent({
     },
     play(event) {
       this.isPlayed = true;
+      console.log(this.isPlayed);
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
   },

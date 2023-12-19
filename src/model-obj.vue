@@ -96,8 +96,6 @@ export default defineComponent({
           }
         });
 
-        console.log('version 27 obj material', object);
-
         this.reportProgress('end');
         if (this.process) {
           this.process(object);

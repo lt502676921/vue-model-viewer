@@ -63,8 +63,6 @@ export default defineComponent({
             }
           });
 
-          console.log('version 27 gltf material', data);
-
           this.reportProgress('end');
           this.addObject(data.scene);
 
