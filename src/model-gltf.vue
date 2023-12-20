@@ -51,17 +51,21 @@ export default defineComponent({
       this.loader.load(
         this.src,
         data => {
-          data.scene.traverse(child => {
-            if (child.isMesh) {
-              const temp = child.material;
-              child.castShadow = true;
-              child.receiveShadow = true;
-              child.material = new MeshPhysicalMaterial({ map: temp.map });
-              if (child.material.map) child.material.map.anisotropy = 16;
-              child.material.roughness = 0.4;
-              child.material.needsUpdate = true;
-            }
-          });
+          // data.scene.traverse(child => {
+          // if (child.isMesh) {
+          // const temp = child.material;
+          // console.log(temp.map);
+          // child.castShadow = true;
+          // child.receiveShadow = true;
+          // child.material = new MeshPhysicalMaterial({
+          // map: temp.map,
+          // });
+          // console.log(child.material);
+          // if (child.material.map) child.material.map.anisotropy = 16;
+          // child.material.roughness = 0.4;
+          // child.material.needsUpdate = true;
+          // }
+          // });
 
           this.reportProgress('end');
           this.addObject(data.scene);
