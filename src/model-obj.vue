@@ -103,6 +103,8 @@ export default defineComponent({
 
         this.addObject(object);
 
+        this.controls.model = object;
+
         this.$emit('load');
       };
 

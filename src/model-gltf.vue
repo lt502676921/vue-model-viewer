@@ -70,6 +70,8 @@ export default defineComponent({
           this.reportProgress('end');
           this.addObject(data.scene);
 
+          this.controls.model = data.scene;
+
           this.$emit('load');
         },
         event => {
