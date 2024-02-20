@@ -657,7 +657,7 @@ export default defineComponent({
 
         if (this.cameraPosition.x === 0 && this.cameraPosition.y === 0 && this.cameraPosition.z === 0) {
           camera.position.z = distance;
-          this.smoothControls.setRadius(distance * 1.08);
+          this.smoothControls.setRadius(distance * 1.2);
         }
 
         camera.lookAt(new Vector3());
