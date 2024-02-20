@@ -152,7 +152,8 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from './custom-orbitcontrols';
 import { gsap } from 'gsap';
 import { getSize, getCenter } from './utils';
 import { defineComponent } from 'vue';
@@ -444,9 +445,7 @@ export default defineComponent({
 
     this.controls = new OrbitControls(this.camera, this.$refs.container);
 
-    this.controls.addEventListener('change', () => {
-      this.play();
-    });
+    this.controls.addEventListener('change', this.play);
     // this.controls.type = 'orbit';
 
     /**
@@ -658,7 +657,7 @@ export default defineComponent({
 
         if (this.cameraPosition.x === 0 && this.cameraPosition.y === 0 && this.cameraPosition.z === 0) {
           camera.position.z = distance;
-          this.smoothControls.setRadius(distance);
+          this.smoothControls.setRadius(distance * 1.08);
         }
 
         camera.lookAt(new Vector3());
@@ -796,6 +795,8 @@ export default defineComponent({
           this.process(object);
 
           this.addObject(object);
+
+          this.controls.model = object;
 
           this.$emit('load');
         },
