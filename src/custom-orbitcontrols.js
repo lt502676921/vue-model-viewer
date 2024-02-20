@@ -150,6 +150,10 @@ const OrbitControls = function (object, domElement) {
           //    restrict phi to be between desired limits
           //spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
 
+          if (this.model != null && this.model.rotation) {
+            spherical.y = this.model.rotation.y
+            spherical.x = this.model.rotation.x
+          }
 
           spherical.y -= sphericalDelta.theta;
           spherical.x -= sphericalDelta.phi;
