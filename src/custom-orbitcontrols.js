@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 const OrbitControls = function (object, domElement) {
 
   this.object = object;
@@ -119,7 +121,7 @@ const OrbitControls = function (object, domElement) {
 
       // so camera.up is the orbit axis
       var quat = new THREE.Quaternion().setFromUnitVectors(object.up, new THREE.Vector3(0, 1, 0));
-      var quatInverse = quat.clone().inverse();
+    //   var quatInverse = quat.clone().inverse();
 
       var lastPosition = new THREE.Vector3();
       var lastQuaternion = new THREE.Quaternion();
@@ -143,9 +145,9 @@ const OrbitControls = function (object, domElement) {
           //spherical.theta += sphericalDelta.theta;
           //spherical.phi += sphericalDelta.phi;
 
-           restrict theta to be between desired limits
+          //    restrict theta to be between desired limits
           //spherical.theta = Math.max(scope.minAzimuthAngle, Math.min(scope.maxAzimuthAngle, spherical.theta));
-           restrict phi to be between desired limits
+          //    restrict phi to be between desired limits
           //spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
 
 

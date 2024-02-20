@@ -656,7 +656,7 @@ export default defineComponent({
         camera.rotation.set(this.cameraRotation.x, this.cameraRotation.y, this.cameraRotation.z);
 
         if (this.cameraPosition.x === 0 && this.cameraPosition.y === 0 && this.cameraPosition.z === 0) {
-          camera.position.z = distance;
+          camera.position.z = distance * 1.2;
           this.smoothControls.setRadius(distance * 1.2);
         }
 
@@ -867,7 +867,6 @@ export default defineComponent({
     },
     play(event) {
       this.isPlayed = true;
-      console.log(this.isPlayed);
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
   },
