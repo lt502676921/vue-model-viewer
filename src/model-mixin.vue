@@ -343,7 +343,8 @@ export default defineComponent({
         },
 
         // Error
-        () => {
+        (error) => {
+          console.log(error);
           this.isError = true;
         }
       ),
@@ -447,6 +448,7 @@ export default defineComponent({
 
     this.controls.addEventListener('change', this.play);
     // this.controls.type = 'orbit';
+    this.controls.model = this.wrapper;
 
     /**
      * loadingBarElement
@@ -656,8 +658,8 @@ export default defineComponent({
         camera.rotation.set(this.cameraRotation.x, this.cameraRotation.y, this.cameraRotation.z);
 
         if (this.cameraPosition.x === 0 && this.cameraPosition.y === 0 && this.cameraPosition.z === 0) {
-          camera.position.z = distance * 1.2;
-          this.smoothControls.setRadius(distance * 1.2);
+          camera.position.z = distance * 1.08;
+          this.smoothControls.setRadius(distance * 1.08);
         }
 
         camera.lookAt(new Vector3());

@@ -27,8 +27,8 @@ const OrbitControls = function (object, domElement) {
 
   // How far you can orbit vertically, upper and lower limits.
   // Range is 0 to Math.PI radians.
-  this.minPolarAngle = -Math.PI / 2; // radians
-  this.maxPolarAngle = Math.PI / 2; // radians
+  this.minPolarAngle = - Infinity; // radians
+  this.maxPolarAngle = Infinity; // radians
 
   // How far you can orbit horizontally, upper and lower limits.
   // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
@@ -150,12 +150,9 @@ const OrbitControls = function (object, domElement) {
           //    restrict phi to be between desired limits
           //spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
 
-          if (this.model != null && this.model.rotation) {
-            spherical.y = this.model.rotation.y
-            spherical.x = this.model.rotation.x
-          }
-
+          spherical.y = this.model?.rotation.y ?? 0;
           spherical.y -= sphericalDelta.theta;
+          spherical.x = this.model?.rotation.x ?? 0;
           spherical.x -= sphericalDelta.phi;
 
           // restrict theta to be between desired limits
