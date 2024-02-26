@@ -103,6 +103,8 @@ export default defineComponent({
 
         this.addObject(object);
 
+        this.updateObjectInfo();
+
         this.$emit('load');
       };
 

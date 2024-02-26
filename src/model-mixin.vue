@@ -121,6 +121,28 @@
       <div>Error loading the model,</div>
       <div>please refresh the page.</div>
     </div>
+    <div class="object-info" style="position: absolute;top: 0;right: 0;">
+      <div
+        class="info-icon"
+        style="position: absolute;top: 10px;right: 10px;color: #565266;cursor: pointer;transition: ease all .3s"
+        onmouseover="this.style.color = '#f8f4ff'"
+        @mouseover="showInfo"
+        onmouseout="this.style.color = '#565266'"
+        @mouseout="hideInfo"
+      >
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg>
+      </div>
+      <div ref="info-window" style="opacity: 0;transition: ease all .3s;position: absolute;top: 34px;right: 10px;border-radius: 6px;padding: 6px 8px;color: #fff;font-size:14px;background-color:rgba(0, 0, 0, 0.85);">
+        <div style="display: flex;justify-content: space-between;gap: 8px;">
+          <div style="color: #696969;">vertices</div>
+          <div>{{ verticesText }}</div>
+        </div>
+        <div style="display: flex;justify-content: space-between;gap: 8px;">
+          <div style="color: #696969;">triangles</div>
+          <div>{{ trianglesText }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -152,6 +174,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js'
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OrbitControls } from './custom-orbitcontrols';
 import { gsap } from 'gsap';
@@ -289,6 +312,9 @@ export default defineComponent({
       smoothControls: null,
       loadingBarElement: null,
       isError: false, // 加载中是否出现错误
+      isShowInfo: false, // 是否展示模型信息（顶点数、面数）
+      verticesText: 0,
+      trianglesText: 0,
       loadingManager: new LoadingManager(
         // Loaded
         () => {
@@ -686,7 +712,7 @@ export default defineComponent({
       // if (this && this.renderer) {
       //   let that = this;
       //   new RGBELoader().load(
-      //     'https://user-images-1310094445.cos.ap-beijing.myqcloud.com/venice_sunset_1k.hdr',
+      //     'https://assets-1320256551.cos.ap-beijing.myqcloud.com/objectviewhdr/brown_photostudio_06_1k.hdr',
       //     function (texture) {
       //       const gen = new PMREMGenerator(that.renderer);
       //       const envMap = gen.fromEquirectangular(texture).texture;
@@ -697,6 +723,8 @@ export default defineComponent({
       //     }
       //   );
       // }
+
+      // this.renderer.toneMappingExposure = 10
 
       this.allLights = [];
 
@@ -869,6 +897,76 @@ export default defineComponent({
       this.isPlayed = true;
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
+    showInfo() {
+      this.$refs['info-window'].style.opacity = 1
+      
+    },
+    hideInfo() {
+      this.$refs['info-window'].style.opacity = 0
+    },
+    updateObjectInfo() {
+      Number.prototype.format = function () {
+
+        return this.toString().replace( /(\d)(?=(\d{3})+(?!\d))/g, '$1,' );
+
+      };
+      // const modifier = new SimplifyModifier()
+
+      const object = this.object;
+
+      // const tempMaterial = null;
+      // object.traverse(child => {
+      //   if(child.isMesh) {
+      //     if(child.material) {
+      //       tempMaterial = child.material
+      //     }
+      //   }
+      // })
+
+      // if ( object === null ) {
+      //   container.setDisplay( 'none' );
+      //   return
+      // }
+      // container.setDisplay( '' );
+
+      let vertices = 0, triangles = 0;
+
+      object.traverseVisible( function ( object ) {
+
+        if ( object.isMesh || object.isPoints ) {
+          // console.log(object.geometry.attributes.position.count);
+				  // const count = Math.floor( object.geometry.attributes.position.count *  0.1)
+				  // console.log(count);
+          // object.geometry = modifier.modify(object.geometry, count)
+          // object.geometry.computeFaceNormals();
+          // object.geometry.computeVertexNormals();
+
+          const geometry = object.geometry;
+
+          vertices += geometry.attributes.position.count;
+
+          if ( object.isMesh ) {
+
+            if ( geometry.index !== null ) {
+
+              triangles += geometry.index.count / 3;
+
+            } else {
+
+              triangles += geometry.attributes.position.count / 3;
+
+            }
+
+          }
+
+        }
+
+      } );
+
+      this.verticesText = vertices.format();
+      this.trianglesText = triangles.format();
+
+    }
   },
 });
 </script>
