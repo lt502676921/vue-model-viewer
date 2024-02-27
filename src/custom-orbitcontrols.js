@@ -337,6 +337,10 @@ const OrbitControls = function (object, domElement) {
 
           v.multiplyScalar(distance);
 
+          const tempVY = v.y
+          v.y = -v.z
+          v.z = tempVY
+
           panOffset.add(v);
 
       };
