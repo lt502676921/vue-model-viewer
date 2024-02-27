@@ -134,11 +134,15 @@
       </div>
       <div ref="info-window" style="opacity: 0;transition: ease all .3s;position: absolute;top: 46px;right: 20px;border-radius: 6px;padding: 6px 8px;color: #fff;font-size:14px;background-color:rgba(0, 0, 0, 0.85);">
         <div style="display: flex;justify-content: space-between;gap: 8px;">
-          <div style="color: #696969;">vertices</div>
+          <div style="color: #696969;">File size</div>
+          <div>{{ fileSizeText }}</div>
+        </div>
+        <div style="display: flex;justify-content: space-between;gap: 8px;">
+          <div style="color: #696969;">Vertices</div>
           <div>{{ verticesText }}</div>
         </div>
         <div style="display: flex;justify-content: space-between;gap: 8px;">
-          <div style="color: #696969;">triangles</div>
+          <div style="color: #696969;">Triangles</div>
           <div>{{ trianglesText }}</div>
         </div>
       </div>
@@ -313,6 +317,8 @@ export default defineComponent({
       loadingBarElement: null,
       isError: false, // 加载中是否出现错误
       isShowInfo: false, // 是否展示模型信息（顶点数、面数）
+      fileSizeNumber: 0,
+      fileSizeText: 0,
       verticesText: 0,
       trianglesText: 0,
       loadingManager: new LoadingManager(
@@ -360,6 +366,11 @@ export default defineComponent({
 
         // Progress, 下载完以后的加载进度
         (itemUrl, itemsLoaded, itemsTotal) => {
+          let that = this
+          this.fetchFileSize(itemUrl, function (size) {
+            that.fileSizeNumber = Number(that.fileSizeNumber) + Number(size)
+            that.fileSizeText = that.computeFileSize(that.fileSizeNumber)
+          })
           const progressRatio = (itemsLoaded / itemsTotal) * 100;
           if (this.loadingBarElement) {
             if (progressRatio == 100) {
@@ -966,6 +977,30 @@ export default defineComponent({
       this.verticesText = vertices.format();
       this.trianglesText = triangles.format();
 
+    },
+    fetchFileSize(url, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('HEAD', url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          var size = xhr.getResponseHeader('Content-Length');
+          callback(size)
+        }
+      }
+      xhr.send(null)
+    },
+    computeFileSize(size) { //把字节转换成正常文件大小
+      if (!size)  return "";
+      var num = 1024.00; //byte
+      if (size < num)
+          return size + "B";
+      if (size < Math.pow(num, 2))
+          return (size / num).toFixed(1) + "KB"; //kb
+      if (size < Math.pow(num, 3))
+          return (size / Math.pow(num, 2)).toFixed(1) + "MB"; //M
+      if (size < Math.pow(num, 4))
+          return (size / Math.pow(num, 3)).toFixed(1) + "G"; //G
+      return (size / Math.pow(num, 4)).toFixed(1) + "T"; //T
     }
   },
 });
