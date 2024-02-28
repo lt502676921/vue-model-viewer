@@ -147,6 +147,7 @@
         </div>
       </div>
     </div>
+    <button style="position: absolute;top:20px;left:20px;" @click="toggleWireframeMode">wireframe: {{ isWireframeMode ? '开' : '关' }}</button>
   </div>
 </template>
 
@@ -421,6 +422,7 @@ export default defineComponent({
         loaded: 0,
         isProgressComplete: false, // 只用来控制进度条
       },
+      isWireframeMode: false,
     };
 
     // 为了保留类型信息，仍然返回 result 的 type
@@ -1001,6 +1003,31 @@ export default defineComponent({
       if (size < Math.pow(num, 4))
           return (size / Math.pow(num, 3)).toFixed(1) + "G"; //G
       return (size / Math.pow(num, 4)).toFixed(1) + "T"; //T
+    },
+    toggleWireframeMode () {
+      this.isWireframeMode = !this.isWireframeMode
+      if (this.isWireframeMode) {
+        this.object.traverse( child => {
+          if ( child.isMesh && child.geometry ) {
+            const edges = new THREE.EdgesGeometry(child.geometry, 1);
+            // const edgesMtl =  new THREE.LineBasicMaterial({ color: 0xff0000 });
+            const edgesMtl =  new THREE.LineBasicMaterial({ color: 0x444444 });
+            const line = new THREE.LineSegments(edges, edgesMtl);
+            line.name = 'wireframeHelper';
+            child.add(line)
+          }
+        } )
+      } else {
+        let toBeDeleted = [];
+        this.object.traverse( child => {
+          if ( child.name === 'wireframeHelper' ) {
+            toBeDeleted.push(child);
+          }
+        } )
+        if ( toBeDeleted.length > 0 ) {
+          toBeDeleted.forEach( i => i.parent.remove(i) );
+        }
+      }
     }
   },
 });
