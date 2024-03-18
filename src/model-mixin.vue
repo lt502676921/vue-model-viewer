@@ -121,7 +121,7 @@
       <div>Error loading the model,</div>
       <div>please refresh the page.</div>
     </div>
-    <div class="object-info" style="position: absolute;top: 0;right: 0;">
+    <div class="object-info" style="position: absolute;top: 0;right: 0;transition: all .6s ease-in-out;" :style="{opacity: progress.isComplete === true ? 1 : 0}">
       <div
         class="info-icon"
         style="position: absolute;top: 20px;right: 20px;color: #565266;cursor: pointer;transition: ease all .3s;transform: scale(1.2);"
@@ -147,8 +147,9 @@
         </div>
       </div>
     </div>
-    <div 
-      style="position: absolute;top:20px;left:20px;cursor: pointer;transition: all .3s ease-in-out;"
+    <div
+      style="position: absolute;top:20px;left:20px;cursor: pointer;transition: all .6s ease-in-out;"
+      :style="{opacity: progress.isComplete === true ? 1 : 0}"
       @click="toggleWireframeMode"
       onmouseover="this.style.transform = 'scale(1.2)'"
       onmouseout="this.style.transform = 'scale(1)'"
