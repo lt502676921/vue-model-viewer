@@ -1,6 +1,6 @@
 {
   "name": "@aeonlabs/vue-model-viewer",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "",
   "main": "dist/vue-model-viewer.cjs.js",
   "module": "dist/vue-model-viewer.esm.js",
