@@ -129,6 +129,7 @@
         @mouseover="showInfo"
         onmouseout="this.style.color = '#565266'"
         @mouseout="hideInfo"
+        v-on:touchstart="toggleWireframeMode"
       >
         <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg>
       </div>
@@ -151,6 +152,7 @@
       style="position: absolute;top:20px;left:20px;cursor: pointer;transition: all .6s ease-in-out;"
       :style="{opacity: progress.isComplete === true ? 1 : 0}"
       @click="toggleWireframeMode"
+      v-on:touchstart="toggleWireframeMode"
       onmouseover="this.style.transform = 'scale(1.2)'"
       onmouseout="this.style.transform = 'scale(1)'"
     >
@@ -499,7 +501,7 @@ export default defineComponent({
     // this.composer.addPass(bloomPass);
 
     this.controls = new OrbitControls(this.camera, this.$refs.container);
-
+    this.controls.enableDamping = true;
     this.controls.addEventListener('change', this.play);
     // this.controls.type = 'orbit';
     this.controls.model = this.wrapper;
@@ -707,6 +709,7 @@ export default defineComponent({
         if (!object) return;
 
         const distance = getSize(object).length();
+        console.log('getSize', getSize(object));
 
         camera.position.set(this.cameraPosition.x, this.cameraPosition.y, this.cameraPosition.z);
         camera.rotation.set(this.cameraRotation.x, this.cameraRotation.y, this.cameraRotation.z);
@@ -1043,6 +1046,41 @@ export default defineComponent({
           toBeDeleted.forEach( i => i.parent.remove(i) );
         }
       }
+    },
+    getVolume(geometry) {
+      if (!geometry.isBufferGeometry) {
+        console.log("'geometry' must be an indexed or non-indexed buffer geometry");
+        return 0;
+      }
+      var isIndexed = geometry.index !== null;
+      let position = geometry.attributes.position;
+      let sum = 0;
+      let p1 = new THREE.Vector3(),
+        p2 = new THREE.Vector3(),
+        p3 = new THREE.Vector3();
+      if (!isIndexed) {
+        let faces = position.count / 3;
+        for (let i = 0; i < faces; i++) {
+          p1.fromBufferAttribute(position, i * 3 + 0);
+          p2.fromBufferAttribute(position, i * 3 + 1);
+          p3.fromBufferAttribute(position, i * 3 + 2);
+          sum += this.signedVolumeOfTriangle(p1, p2, p3);
+        }
+      }
+      else {
+        let index = geometry.index;
+        let faces = index.count / 3;
+        for (let i = 0; i < faces; i++){
+          p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
+          p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
+          p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+          sum += this.signedVolumeOfTriangle(p1, p2, p3);
+        }
+      }
+      return sum;
+    },
+    signedVolumeOfTriangle(p1, p2, p3) {
+      return p1.dot(p2.cross(p3)) / 6.0;
     }
   },
 });

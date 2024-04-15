@@ -1,4 +1,5 @@
 <script>
+import * as THREE from 'three';
 import { defineComponent } from 'vue';
 // import { Object3D } from 'three';
 import { MeshPhysicalMaterial } from 'three';
@@ -104,6 +105,24 @@ export default defineComponent({
         this.addObject(object);
 
         this.updateObjectInfo();
+
+        let size = new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
+        const targetHeight = 8
+        const scale = targetHeight / size.y
+        object.scale.set(scale, scale, scale)
+
+        object.traverse(child => {
+          if (child.geometry) {
+            console.log(this.getVolume(child.geometry));
+            console.log(this.getVolume(child.geometry) * Math.pow(scale, 3));
+          }
+        });
+
+        // const geometry = new THREE.SphereGeometry( 15, 32, 16 );
+        // const geometry = new THREE.BoxGeometry(10, 10, 10);
+        // const geometry = new THREE.ConeGeometry( 5, 20, 64, 64 );
+        // console.log(geometry);
+        // console.log(this.getVolume(geometry));
 
         this.$emit('load');
       };
