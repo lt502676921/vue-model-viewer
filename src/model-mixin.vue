@@ -1126,7 +1126,9 @@ export default defineComponent({
               }
 
               void main() {
-                  gl_FragColor = vec4(min(vec3(edgeFactor()), color), 0.2);
+                if (vBarycentric.x > lineWidth || vBarycentric.y > lineWidth) {
+                  gl_FragColor = vec4(min(vec3(edgeFactor()), color), 1);
+                }
               }
             `,
             vertexShader: `
