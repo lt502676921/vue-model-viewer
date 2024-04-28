@@ -121,48 +121,102 @@
       <div>Error loading the model,</div>
       <div>please refresh the page.</div>
     </div>
-    <div class="object-info" style="position: absolute;top: 0;right: 0;transition: all .6s ease-in-out;" :style="{opacity: progress.isComplete === true ? 1 : 0}">
+    <div
+      class="object-info"
+      style="position: absolute; top: 0; right: 0; transition: all 0.6s ease-in-out"
+      :style="{ opacity: progress.isComplete === true ? 1 : 0 }"
+    >
       <div
         class="info-icon"
-        style="position: absolute;top: 20px;right: 20px;color: #565266;cursor: pointer;transition: ease all .3s;transform: scale(1.2);"
+        style="
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          color: #565266;
+          cursor: pointer;
+          transition: ease all 0.3s;
+          transform: scale(1.2);
+        "
         onmouseover="this.style.color = '#f8f4ff'"
         @mouseover="showInfo"
         onmouseout="this.style.color = '#565266'"
         @mouseout="hideInfo"
         v-on:touchstart="isShowInfo ? hideInfo() : showInfo()"
       >
-        <svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg>
+        <svg
+          viewBox="64 64 896 896"
+          focusable="false"
+          data-icon="info-circle"
+          width="1em"
+          height="1em"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"
+          ></path>
+          <path
+            d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"
+          ></path>
+        </svg>
       </div>
-      <div ref="info-window" style="opacity: 0;transition: ease all .3s;position: absolute;top: 46px;right: 20px;border-radius: 6px;padding: 6px 8px;color: #fff;font-size:14px;background-color:rgba(0, 0, 0, 0.85);">
-        <div style="display: flex;justify-content: space-between;gap: 8px;">
-          <div style="color: #696969;">File size</div>
+      <div
+        ref="info-window"
+        style="
+          opacity: 0;
+          transition: ease all 0.3s;
+          position: absolute;
+          top: 46px;
+          right: 20px;
+          border-radius: 6px;
+          padding: 6px 8px;
+          color: #fff;
+          font-size: 14px;
+          background-color: rgba(0, 0, 0, 0.85);
+        "
+      >
+        <div style="display: flex; justify-content: space-between; gap: 8px">
+          <div style="color: #696969">File size</div>
           <div>{{ fileSizeText }}</div>
         </div>
-        <div style="display: flex;justify-content: space-between;gap: 8px;">
-          <div style="color: #696969;">Vertices</div>
+        <div style="display: flex; justify-content: space-between; gap: 8px">
+          <div style="color: #696969">Vertices</div>
           <div>{{ verticesText }}</div>
         </div>
-        <div style="display: flex;justify-content: space-between;gap: 8px;">
-          <div style="color: #696969;">Triangles</div>
+        <div style="display: flex; justify-content: space-between; gap: 8px">
+          <div style="color: #696969">Triangles</div>
           <div>{{ trianglesText }}</div>
         </div>
       </div>
     </div>
     <div
-      style="position: absolute;top:20px;left:20px;cursor: pointer;transition: all .6s ease-in-out;"
-      :style="{opacity: progress.isComplete === true ? 1 : 0}"
+      style="position: absolute; top: 20px; left: 20px; cursor: pointer; transition: all 0.6s ease-in-out"
+      :style="{ opacity: progress.isComplete === true ? 1 : 0 }"
       @click="toggleWireframeMode"
       v-on:touchstart="toggleWireframeMode"
       onmouseover="this.style.transform = 'scale(1.2)'"
       onmouseout="this.style.transform = 'scale(1)'"
     >
-      <svg v-if="isWireframeMode" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4.15397 4.85838L2.76481 7.96364M4.15397 4.85838L5.24289 6.56518M4.15397 4.85838L3.87478 3.99065M4.15397 4.85838L2.25 6.49424M4.15397 4.85838L6.87522 3.80374M4.15397 4.85838L6.04453 2.6952M2.76481 7.96364L5.24289 6.56518M2.76481 7.96364L2.25 6.49424M2.76481 7.96364L1.41683 9.46101M2.76481 7.96364L2.30066 11.116M2.76481 7.96364L4.2068 9.86009M5.24289 6.56518L4.2068 9.86009M5.24289 6.56518L6.88333 8.66287M5.24289 6.56518L8.16907 5.70086M5.24289 6.56518L6.87522 3.80374M1.31434 8.49028L2.63063 5.57057L3.87478 3.99065M1.31434 8.49028L1 11.4195M1.31434 8.49028L1.41683 9.46101M3.87478 3.99065L5.73688 2.40596M3.87478 3.99065L2.25 6.49424M3.87478 3.99065L6.04453 2.6952M5.73688 2.40596L8.0193 1.39157M5.73688 2.40596L6.04453 2.6952M1.57887 14.2471L1 11.4195M1.57887 14.2471L2.55316 16.3742M1.57887 14.2471L1.40537 12.1201M1.57887 14.2471L2.39511 14.1653M1.57887 14.2471L3.01734 16.658M1 11.4195L1.40537 12.1201M1 11.4195L1.41683 9.46101M15.0245 20.2544L17.5141 18.656L18.7499 17.2126M15.0245 20.2544L13.3777 20.6603M15.0245 20.2544L12.2098 21M15.7465 2.11809L18.0464 3.82625M15.7465 2.11809L12.9964 1.14189M15.7465 2.11809L14.0083 1.53142M15.7465 2.11809L16.3635 2.6761M18.0464 3.82625L19.6359 6.10608M18.0464 3.82625L16.3635 2.6761M18.0464 3.82625L17.8386 4.38836M19.364 5.71576L19.362 5.70769L19.3483 5.69404M19.366 5.71656L19.37 5.7253M8.0193 1.39157L9.80246 1.06958L10.9973 1M8.0193 1.39157L6.04453 2.6952M8.0193 1.39157L10.9973 1M8.0193 1.39157L8.87832 1.89296M10.9973 1L12.9964 1.14189M10.9973 1L14.0083 1.53142M10.9973 1L12.2813 1.97551M10.9973 1L8.87832 1.89296M12.9964 1.14189L14.0083 1.53142M2.55316 16.3742L4.48543 18.6943M2.55316 16.3742L3.01734 16.658M4.48543 18.6943L7.11597 20.2933M4.48543 18.6943L3.01734 16.658M4.48543 18.6943L5.49191 18.7829M7.11597 20.2933L9.02462 20.8104L10.1871 20.9795M7.11597 20.2933L8.31611 19.9924M7.11597 20.2933L10.1871 20.9795M7.11597 20.2933L5.49191 18.7829M10.1871 20.9795L12.2098 21M10.1871 20.9795L8.31611 19.9924M10.1871 20.9795L13.3777 20.6603M10.1871 20.9795L11.4016 20.1712M12.2098 21L13.3777 20.6603M14.0083 1.53142L16.3635 2.6761M14.0083 1.53142L15.2652 2.93464M14.0083 1.53142L12.2813 1.97551M13.3777 20.6603L11.4016 20.1712M13.3777 20.6603L14.3802 19.2802M13.3777 20.6603L16.3394 19.3573M18.7499 17.2126L19.3361 16.4281L20.3542 14.4661M18.7499 17.2126L19.3228 15.0965M18.7499 17.2126L20.3542 14.4661M18.7499 17.2126L17.3047 17.4049M18.7499 17.2126L16.3394 19.3573M19.6359 6.10608L20.6464 8.40296M19.6359 6.10608L19.0244 7.05225M19.6359 6.10608L20.5251 9.20247M19.6359 6.10608L17.8386 4.38836M20.3542 14.4661L20.9999 11.4223M20.3542 14.4661L19.3228 15.0965M20.3542 14.4661L20.4319 12.2477M20.9999 11.4223L20.6464 8.40296M20.9999 11.4223L20.4319 12.2477M20.9999 11.4223L20.5251 9.20247M20.6464 8.40296L20.5251 9.20247M1.40537 12.1201L1.41683 9.46101M1.40537 12.1201L2.30066 11.116M1.40537 12.1201L2.39511 14.1653M1.41683 9.46101L2.25 6.49424M1.41683 9.46101L2.30066 11.116M2.30066 11.116L4.2068 9.86009M2.30066 11.116L2.39511 14.1653M2.30066 11.116L3.9059 13.271M2.39511 14.1653L4.36456 16.3653M2.39511 14.1653L3.01734 16.658M2.39511 14.1653L3.9059 13.271M9.54289 7.80606L6.88333 8.66287M9.54289 7.80606L8.16907 5.70086M9.54289 7.80606L9.35569 10.6528M9.54289 7.80606L12.1866 8.85865M9.54289 7.80606L11.4134 5.80251M6.88333 8.66287L4.2068 9.86009M6.88333 8.66287L8.16907 5.70086M6.88333 8.66287L9.35569 10.6528M6.88333 8.66287L6.46899 11.9741M8.16907 5.70086L6.87522 3.80374M8.16907 5.70086L11.4134 5.80251M8.16907 5.70086L10.125 3.49267M9.35569 10.6528L9.29046 14.0336M9.35569 10.6528L12.1866 8.85865M9.35569 10.6528L12.3103 12.2266M9.35569 10.6528L6.46899 11.9741M12.1866 8.85865L15.1742 10.2926M12.1866 8.85865L11.4134 5.80251M12.1866 8.85865L14.523 6.87353M12.1866 8.85865L12.3103 12.2266M11.4134 5.80251L13.5097 3.98929M11.4134 5.80251L14.523 6.87353M11.4134 5.80251L10.125 3.49267M6.04453 2.6952L6.87522 3.80374M6.04453 2.6952L8.87832 1.89296M9.60605 19.034L9.39623 17.0379M9.60605 19.034L7.02336 18.0939M9.60605 19.034L8.31611 19.9924M9.60605 19.034L12.1538 18.3736M9.60605 19.034L11.4016 20.1712M9.39623 17.0379L9.29046 14.0336M9.39623 17.0379L7.02336 18.0939M9.39623 17.0379L12.1538 18.3736M9.39623 17.0379L12.296 15.7554M9.39623 17.0379L6.52624 15.4689M7.02336 18.0939L4.36456 16.3653M7.02336 18.0939L8.31611 19.9924M7.02336 18.0939L5.49191 18.7829M7.02336 18.0939L6.52624 15.4689M8.31611 19.9924L11.4016 20.1712M8.31611 19.9924L5.49191 18.7829M12.1538 18.3736L15.0819 16.9179M12.1538 18.3736L11.4016 20.1712M12.1538 18.3736L14.3802 19.2802M12.1538 18.3736L12.296 15.7554M11.4016 20.1712L14.3802 19.2802M16.3635 2.6761L15.2652 2.93464M16.3635 2.6761L17.8386 4.38836M15.2652 2.93464L13.5097 3.98929M15.2652 2.93464L17.8386 4.38836M15.2652 2.93464L16.602 5.23289M15.2652 2.93464L12.2813 1.97551M17.8386 4.38836L19.0244 7.05225M17.8386 4.38836L16.602 5.23289M19.2014 12.9012L17.6712 11.7606M19.2014 12.9012L17.5997 14.8891M19.2014 12.9012L19.4651 10.1623M19.2014 12.9012L19.3228 15.0965M19.2014 12.9012L20.4319 12.2477M17.6712 11.7606L15.1742 10.2926M17.6712 11.7606L17.5997 14.8891M17.6712 11.7606L19.4651 10.1623M17.6712 11.7606L17.5005 8.49369M17.6712 11.7606L15.3658 13.7962M17.5997 14.8891L15.0819 16.9179M17.5997 14.8891L19.3228 15.0965M17.5997 14.8891L17.3047 17.4049M17.5997 14.8891L15.3658 13.7962M19.4651 10.1623L19.0244 7.05225M19.4651 10.1623L20.4319 12.2477M19.4651 10.1623L20.5251 9.20247M19.4651 10.1623L17.5005 8.49369M19.3228 15.0965L20.4319 12.2477M19.3228 15.0965L17.3047 17.4049M20.4319 12.2477L20.5251 9.20247M4.2068 9.86009L6.46899 11.9741M4.2068 9.86009L3.9059 13.271M3.9059 13.271L4.36456 16.3653M3.9059 13.271L6.46899 11.9741M3.9059 13.271L6.52624 15.4689M6.46899 11.9741L9.29046 14.0336M6.46899 11.9741L6.52624 15.4689M6.87522 3.80374L8.87832 1.89296M6.87522 3.80374L10.125 3.49267M10.125 3.49267L13.5097 3.98929M10.125 3.49267L8.87832 1.89296M10.125 3.49267L12.2813 1.97551M8.87832 1.89296L12.2813 1.97551M9.29046 14.0336L12.3103 12.2266M9.29046 14.0336L12.296 15.7554M9.29046 14.0336L6.52624 15.4689M12.296 15.7554L15.0819 16.9179M12.296 15.7554L12.3103 12.2266M12.296 15.7554L15.3658 13.7962M6.52624 15.4689L4.36456 16.3653M12.3103 12.2266L15.1742 10.2926M12.3103 12.2266L15.3658 13.7962M4.36456 16.3653L5.49191 18.7829M4.36456 16.3653L3.01734 16.658M3.01734 16.658L5.49191 18.7829M15.1742 10.2926L14.523 6.87353M15.1742 10.2926L17.5005 8.49369M15.1742 10.2926L15.3658 13.7962M17.5005 8.49369L19.0244 7.05225M17.5005 8.49369L14.523 6.87353M17.5005 8.49369L16.602 5.23289M15.3658 13.7962L15.0819 16.9179M14.523 6.87353L13.5097 3.98929M14.523 6.87353L16.602 5.23289M15.0819 16.9179L17.3047 17.4049M15.0819 16.9179L14.3802 19.2802M14.3802 19.2802L17.3047 17.4049M14.3802 19.2802L16.3394 19.3573M17.3047 17.4049L16.3394 19.3573M12.2813 1.97551L13.5097 3.98929M13.5097 3.98929L16.602 5.23289M16.602 5.23289L19.0244 7.05225M19.0244 7.05225L20.5251 9.20247" stroke="#5C5C5C" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="11" cy="11" r="10" stroke="#808080"/>
+      <svg
+        v-if="isWireframeMode"
+        width="22"
+        height="22"
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4.15397 4.85838L2.76481 7.96364M4.15397 4.85838L5.24289 6.56518M4.15397 4.85838L3.87478 3.99065M4.15397 4.85838L2.25 6.49424M4.15397 4.85838L6.87522 3.80374M4.15397 4.85838L6.04453 2.6952M2.76481 7.96364L5.24289 6.56518M2.76481 7.96364L2.25 6.49424M2.76481 7.96364L1.41683 9.46101M2.76481 7.96364L2.30066 11.116M2.76481 7.96364L4.2068 9.86009M5.24289 6.56518L4.2068 9.86009M5.24289 6.56518L6.88333 8.66287M5.24289 6.56518L8.16907 5.70086M5.24289 6.56518L6.87522 3.80374M1.31434 8.49028L2.63063 5.57057L3.87478 3.99065M1.31434 8.49028L1 11.4195M1.31434 8.49028L1.41683 9.46101M3.87478 3.99065L5.73688 2.40596M3.87478 3.99065L2.25 6.49424M3.87478 3.99065L6.04453 2.6952M5.73688 2.40596L8.0193 1.39157M5.73688 2.40596L6.04453 2.6952M1.57887 14.2471L1 11.4195M1.57887 14.2471L2.55316 16.3742M1.57887 14.2471L1.40537 12.1201M1.57887 14.2471L2.39511 14.1653M1.57887 14.2471L3.01734 16.658M1 11.4195L1.40537 12.1201M1 11.4195L1.41683 9.46101M15.0245 20.2544L17.5141 18.656L18.7499 17.2126M15.0245 20.2544L13.3777 20.6603M15.0245 20.2544L12.2098 21M15.7465 2.11809L18.0464 3.82625M15.7465 2.11809L12.9964 1.14189M15.7465 2.11809L14.0083 1.53142M15.7465 2.11809L16.3635 2.6761M18.0464 3.82625L19.6359 6.10608M18.0464 3.82625L16.3635 2.6761M18.0464 3.82625L17.8386 4.38836M19.364 5.71576L19.362 5.70769L19.3483 5.69404M19.366 5.71656L19.37 5.7253M8.0193 1.39157L9.80246 1.06958L10.9973 1M8.0193 1.39157L6.04453 2.6952M8.0193 1.39157L10.9973 1M8.0193 1.39157L8.87832 1.89296M10.9973 1L12.9964 1.14189M10.9973 1L14.0083 1.53142M10.9973 1L12.2813 1.97551M10.9973 1L8.87832 1.89296M12.9964 1.14189L14.0083 1.53142M2.55316 16.3742L4.48543 18.6943M2.55316 16.3742L3.01734 16.658M4.48543 18.6943L7.11597 20.2933M4.48543 18.6943L3.01734 16.658M4.48543 18.6943L5.49191 18.7829M7.11597 20.2933L9.02462 20.8104L10.1871 20.9795M7.11597 20.2933L8.31611 19.9924M7.11597 20.2933L10.1871 20.9795M7.11597 20.2933L5.49191 18.7829M10.1871 20.9795L12.2098 21M10.1871 20.9795L8.31611 19.9924M10.1871 20.9795L13.3777 20.6603M10.1871 20.9795L11.4016 20.1712M12.2098 21L13.3777 20.6603M14.0083 1.53142L16.3635 2.6761M14.0083 1.53142L15.2652 2.93464M14.0083 1.53142L12.2813 1.97551M13.3777 20.6603L11.4016 20.1712M13.3777 20.6603L14.3802 19.2802M13.3777 20.6603L16.3394 19.3573M18.7499 17.2126L19.3361 16.4281L20.3542 14.4661M18.7499 17.2126L19.3228 15.0965M18.7499 17.2126L20.3542 14.4661M18.7499 17.2126L17.3047 17.4049M18.7499 17.2126L16.3394 19.3573M19.6359 6.10608L20.6464 8.40296M19.6359 6.10608L19.0244 7.05225M19.6359 6.10608L20.5251 9.20247M19.6359 6.10608L17.8386 4.38836M20.3542 14.4661L20.9999 11.4223M20.3542 14.4661L19.3228 15.0965M20.3542 14.4661L20.4319 12.2477M20.9999 11.4223L20.6464 8.40296M20.9999 11.4223L20.4319 12.2477M20.9999 11.4223L20.5251 9.20247M20.6464 8.40296L20.5251 9.20247M1.40537 12.1201L1.41683 9.46101M1.40537 12.1201L2.30066 11.116M1.40537 12.1201L2.39511 14.1653M1.41683 9.46101L2.25 6.49424M1.41683 9.46101L2.30066 11.116M2.30066 11.116L4.2068 9.86009M2.30066 11.116L2.39511 14.1653M2.30066 11.116L3.9059 13.271M2.39511 14.1653L4.36456 16.3653M2.39511 14.1653L3.01734 16.658M2.39511 14.1653L3.9059 13.271M9.54289 7.80606L6.88333 8.66287M9.54289 7.80606L8.16907 5.70086M9.54289 7.80606L9.35569 10.6528M9.54289 7.80606L12.1866 8.85865M9.54289 7.80606L11.4134 5.80251M6.88333 8.66287L4.2068 9.86009M6.88333 8.66287L8.16907 5.70086M6.88333 8.66287L9.35569 10.6528M6.88333 8.66287L6.46899 11.9741M8.16907 5.70086L6.87522 3.80374M8.16907 5.70086L11.4134 5.80251M8.16907 5.70086L10.125 3.49267M9.35569 10.6528L9.29046 14.0336M9.35569 10.6528L12.1866 8.85865M9.35569 10.6528L12.3103 12.2266M9.35569 10.6528L6.46899 11.9741M12.1866 8.85865L15.1742 10.2926M12.1866 8.85865L11.4134 5.80251M12.1866 8.85865L14.523 6.87353M12.1866 8.85865L12.3103 12.2266M11.4134 5.80251L13.5097 3.98929M11.4134 5.80251L14.523 6.87353M11.4134 5.80251L10.125 3.49267M6.04453 2.6952L6.87522 3.80374M6.04453 2.6952L8.87832 1.89296M9.60605 19.034L9.39623 17.0379M9.60605 19.034L7.02336 18.0939M9.60605 19.034L8.31611 19.9924M9.60605 19.034L12.1538 18.3736M9.60605 19.034L11.4016 20.1712M9.39623 17.0379L9.29046 14.0336M9.39623 17.0379L7.02336 18.0939M9.39623 17.0379L12.1538 18.3736M9.39623 17.0379L12.296 15.7554M9.39623 17.0379L6.52624 15.4689M7.02336 18.0939L4.36456 16.3653M7.02336 18.0939L8.31611 19.9924M7.02336 18.0939L5.49191 18.7829M7.02336 18.0939L6.52624 15.4689M8.31611 19.9924L11.4016 20.1712M8.31611 19.9924L5.49191 18.7829M12.1538 18.3736L15.0819 16.9179M12.1538 18.3736L11.4016 20.1712M12.1538 18.3736L14.3802 19.2802M12.1538 18.3736L12.296 15.7554M11.4016 20.1712L14.3802 19.2802M16.3635 2.6761L15.2652 2.93464M16.3635 2.6761L17.8386 4.38836M15.2652 2.93464L13.5097 3.98929M15.2652 2.93464L17.8386 4.38836M15.2652 2.93464L16.602 5.23289M15.2652 2.93464L12.2813 1.97551M17.8386 4.38836L19.0244 7.05225M17.8386 4.38836L16.602 5.23289M19.2014 12.9012L17.6712 11.7606M19.2014 12.9012L17.5997 14.8891M19.2014 12.9012L19.4651 10.1623M19.2014 12.9012L19.3228 15.0965M19.2014 12.9012L20.4319 12.2477M17.6712 11.7606L15.1742 10.2926M17.6712 11.7606L17.5997 14.8891M17.6712 11.7606L19.4651 10.1623M17.6712 11.7606L17.5005 8.49369M17.6712 11.7606L15.3658 13.7962M17.5997 14.8891L15.0819 16.9179M17.5997 14.8891L19.3228 15.0965M17.5997 14.8891L17.3047 17.4049M17.5997 14.8891L15.3658 13.7962M19.4651 10.1623L19.0244 7.05225M19.4651 10.1623L20.4319 12.2477M19.4651 10.1623L20.5251 9.20247M19.4651 10.1623L17.5005 8.49369M19.3228 15.0965L20.4319 12.2477M19.3228 15.0965L17.3047 17.4049M20.4319 12.2477L20.5251 9.20247M4.2068 9.86009L6.46899 11.9741M4.2068 9.86009L3.9059 13.271M3.9059 13.271L4.36456 16.3653M3.9059 13.271L6.46899 11.9741M3.9059 13.271L6.52624 15.4689M6.46899 11.9741L9.29046 14.0336M6.46899 11.9741L6.52624 15.4689M6.87522 3.80374L8.87832 1.89296M6.87522 3.80374L10.125 3.49267M10.125 3.49267L13.5097 3.98929M10.125 3.49267L8.87832 1.89296M10.125 3.49267L12.2813 1.97551M8.87832 1.89296L12.2813 1.97551M9.29046 14.0336L12.3103 12.2266M9.29046 14.0336L12.296 15.7554M9.29046 14.0336L6.52624 15.4689M12.296 15.7554L15.0819 16.9179M12.296 15.7554L12.3103 12.2266M12.296 15.7554L15.3658 13.7962M6.52624 15.4689L4.36456 16.3653M12.3103 12.2266L15.1742 10.2926M12.3103 12.2266L15.3658 13.7962M4.36456 16.3653L5.49191 18.7829M4.36456 16.3653L3.01734 16.658M3.01734 16.658L5.49191 18.7829M15.1742 10.2926L14.523 6.87353M15.1742 10.2926L17.5005 8.49369M15.1742 10.2926L15.3658 13.7962M17.5005 8.49369L19.0244 7.05225M17.5005 8.49369L14.523 6.87353M17.5005 8.49369L16.602 5.23289M15.3658 13.7962L15.0819 16.9179M14.523 6.87353L13.5097 3.98929M14.523 6.87353L16.602 5.23289M15.0819 16.9179L17.3047 17.4049M15.0819 16.9179L14.3802 19.2802M14.3802 19.2802L17.3047 17.4049M14.3802 19.2802L16.3394 19.3573M17.3047 17.4049L16.3394 19.3573M12.2813 1.97551L13.5097 3.98929M13.5097 3.98929L16.602 5.23289M16.602 5.23289L19.0244 7.05225M19.0244 7.05225L20.5251 9.20247"
+          stroke="#5C5C5C"
+          stroke-width="0.3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="11" cy="11" r="10" stroke="#808080" />
       </svg>
       <svg v-else width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="11" cy="11" r="10" fill="#5C5C5C" stroke="#808080"/>
-        <ellipse cx="7.49994" cy="6.5" rx="2.5" ry="1.5" transform="rotate(-33.3107 7.49994 6.5)" fill="#BEBEBE"/>
+        <circle cx="11" cy="11" r="10" fill="#5C5C5C" stroke="#808080" />
+        <ellipse cx="7.49994" cy="6.5" rx="2.5" ry="1.5" transform="rotate(-33.3107 7.49994 6.5)" fill="#BEBEBE" />
       </svg>
     </div>
   </div>
@@ -196,7 +250,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js'
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OrbitControls } from './custom-orbitcontrols';
 import { gsap } from 'gsap';
@@ -311,6 +365,13 @@ export default defineComponent({
     glOptions: {
       type: Object,
     },
+    wireframeMode: {
+      type: String,
+      default: 'triangle',
+    },
+    deliverVolumeAndSize: {
+      type: Function,
+    },
   },
   data() {
     const result = {
@@ -384,11 +445,11 @@ export default defineComponent({
 
         // Progress, 下载完以后的加载进度
         (itemUrl, itemsLoaded, itemsTotal) => {
-          let that = this
+          let that = this;
           this.fetchFileSize(itemUrl, function (size) {
-            that.fileSizeNumber = Number(that.fileSizeNumber) + Number(size)
-            that.fileSizeText = that.computeFileSize(that.fileSizeNumber)
-          })
+            that.fileSizeNumber = Number(that.fileSizeNumber) + Number(size);
+            that.fileSizeText = that.computeFileSize(that.fileSizeNumber);
+          });
           const progressRatio = (itemsLoaded / itemsTotal) * 100;
           if (this.loadingBarElement) {
             if (progressRatio == 100) {
@@ -398,7 +459,7 @@ export default defineComponent({
         },
 
         // Error
-        (error) => {
+        error => {
           console.log(error);
           this.isError = true;
         }
@@ -928,18 +989,16 @@ export default defineComponent({
       this.$refs['interaction-prompt'].style.opacity = 0;
     },
     showInfo() {
-      this.isShowInfo = true
-      this.$refs['info-window'].style.opacity = 1
+      this.isShowInfo = true;
+      this.$refs['info-window'].style.opacity = 1;
     },
     hideInfo() {
-      this.isShowInfo = false
-      this.$refs['info-window'].style.opacity = 0
+      this.isShowInfo = false;
+      this.$refs['info-window'].style.opacity = 0;
     },
     updateObjectInfo() {
       Number.prototype.format = function () {
-
-        return this.toString().replace( /(\d)(?=(\d{3})+(?!\d))/g, '$1,' );
-
+        return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
       };
       // const modifier = new SimplifyModifier()
 
@@ -960,14 +1019,14 @@ export default defineComponent({
       // }
       // container.setDisplay( '' );
 
-      let vertices = 0, triangles = 0;
+      let vertices = 0,
+        triangles = 0;
 
-      object.traverseVisible( function ( object ) {
-
-        if ( object.isMesh || object.isPoints ) {
+      object.traverseVisible(function (object) {
+        if (object.isMesh || object.isPoints) {
           // console.log(object.geometry.attributes.position.count);
-				  // const count = Math.floor( object.geometry.attributes.position.count *  0.1)
-				  // console.log(count);
+          // const count = Math.floor( object.geometry.attributes.position.count *  0.1)
+          // console.log(count);
           // object.geometry = modifier.modify(object.geometry, count)
           // object.geometry.computeFaceNormals();
           // object.geometry.computeVertexNormals();
@@ -976,27 +1035,18 @@ export default defineComponent({
 
           vertices += geometry.attributes.position.count;
 
-          if ( object.isMesh ) {
-
-            if ( geometry.index !== null ) {
-
+          if (object.isMesh) {
+            if (geometry.index !== null) {
               triangles += geometry.index.count / 3;
-
             } else {
-
               triangles += geometry.attributes.position.count / 3;
-
             }
-
           }
-
         }
-
-      } );
+      });
 
       this.verticesText = vertices.format();
       this.trianglesText = triangles.format();
-
     },
     fetchFileSize(url, callback) {
       const xhr = new XMLHttpRequest();
@@ -1004,50 +1054,114 @@ export default defineComponent({
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           var size = xhr.getResponseHeader('Content-Length');
-          callback(size)
+          callback(size);
         }
-      }
-      xhr.send(null)
+      };
+      xhr.send(null);
     },
-    computeFileSize(size) { //把字节转换成正常文件大小
-      if (!size)  return "";
-      var num = 1024.00; //byte
-      if (size < num)
-          return size + "B";
-      if (size < Math.pow(num, 2))
-          return (size / num).toFixed(1) + "KB"; //kb
-      if (size < Math.pow(num, 3))
-          return (size / Math.pow(num, 2)).toFixed(1) + "MB"; //M
-      if (size < Math.pow(num, 4))
-          return (size / Math.pow(num, 3)).toFixed(1) + "G"; //G
-      return (size / Math.pow(num, 4)).toFixed(1) + "T"; //T
+    computeFileSize(size) {
+      //把字节转换成正常文件大小
+      if (!size) return '';
+      var num = 1024.0; //byte
+      if (size < num) return size + 'B';
+      if (size < Math.pow(num, 2)) return (size / num).toFixed(1) + 'KB'; //kb
+      if (size < Math.pow(num, 3)) return (size / Math.pow(num, 2)).toFixed(1) + 'MB'; //M
+      if (size < Math.pow(num, 4)) return (size / Math.pow(num, 3)).toFixed(1) + 'G'; //G
+      return (size / Math.pow(num, 4)).toFixed(1) + 'T'; //T
     },
-    toggleWireframeMode () {
-      this.isWireframeMode = !this.isWireframeMode
+    toggleWireframeMode() {
+      this.isWireframeMode = !this.isWireframeMode;
       if (this.isWireframeMode) {
-        this.object.traverse( child => {
-          if ( child.isMesh && child.geometry ) {
-            const edges = new THREE.EdgesGeometry(child.geometry, 1);
-            // const edgesMtl =  new THREE.LineBasicMaterial({ color: 0xff0000 });
-            const edgesMtl =  new THREE.LineBasicMaterial({ color: 0x444444 });
-            const line = new THREE.LineSegments(edges, edgesMtl);
-            line.name = 'wireframeHelper';
-            child.add(line)
+        if (this.wireframeMode === 'triangle') {
+          this.object.traverse(child => {
+            if (child.isMesh && child.geometry) {
+              const edges = new THREE.EdgesGeometry(child.geometry, 1);
+              // const edgesMtl =  new THREE.LineBasicMaterial({ color: 0xff0000 });
+              const edgesMtl = new THREE.LineBasicMaterial({ color: 0x444444 });
+              const line = new THREE.LineSegments(edges, edgesMtl);
+              line.name = 'wireframeHelper';
+              child.add(line);
+            }
+          });
+        }
+        if (this.wireframeMode === 'quad') {
+          let geo = this.object.children[0].geometry;
+          geo = geo.toNonIndexed();
+          const pos = geo.attributes.position;
+          const count = pos.array.length / 3;
+
+          const quadToTriangle = [1, 0, 3, 1, 3, 2];
+          // 3----2
+          // 0----1
+          // Make sure pixels on 1---3 edge will not have channel 0.
+          // And pixels on four edges have at least one channel 0.
+          const quadBarycentric = [
+            [1, 1, 0, 0],
+            [0, 1, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 1, 0],
+          ];
+          let bary = [];
+          for (let i = 0; i < count; i += 6) {
+            for (let j = 0; j < 6; j++) {
+              bary.push(...quadBarycentric[quadToTriangle[j]]);
+            }
           }
-        } )
+          bary = new Float32Array(bary);
+          geo.setAttribute('barycentric', new THREE.BufferAttribute(bary, 4));
+          const material = new THREE.ShaderMaterial({
+            transparent: true,
+            side: THREE.DoubleSide,
+            fragmentShader: `
+              varying vec4 vBarycentric;
+
+              varying vec3 vbc;
+              const float lineWidth = 1.0;
+              const vec3 color = vec3(0.0, 2.0, 1.0);
+
+              float edgeFactor () {
+                vec4 d = fwidth(vBarycentric);
+                vec4 a4 = smoothstep(vec4(0.0), d * lineWidth, vBarycentric);
+                return min(min(min(a4.x, a4.y), a4.z), a4.w);
+              }
+
+              void main() {
+                  gl_FragColor = vec4(min(vec3(edgeFactor()), color), 0.2);
+              }
+            `,
+            vertexShader: `
+              attribute vec4 barycentric;
+
+              varying vec4 vBarycentric;
+
+              varying vec3 vPosition;
+              varying vec2 vUv;
+
+              void main () {
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xyz, 1.0);
+                vBarycentric = barycentric;
+                vPosition = position.xyz;
+                vUv = uv;
+              }
+            `,
+          });
+          const mesh = new THREE.Mesh(geo, material);
+          mesh.name = 'wireframeHelper';
+          this.object.children[0].add(mesh);
+        }
       } else {
         let toBeDeleted = [];
-        this.object.traverse( child => {
-          if ( child.name === 'wireframeHelper' ) {
+        this.object.traverse(child => {
+          if (child.name === 'wireframeHelper') {
             toBeDeleted.push(child);
           }
-        } )
-        if ( toBeDeleted.length > 0 ) {
-          toBeDeleted.forEach( i => i.parent.remove(i) );
+        });
+        if (toBeDeleted.length > 0) {
+          toBeDeleted.forEach(i => i.parent.remove(i));
         }
       }
     },
-    getVolume(geometry) {
+    computeVolume(geometry) {
       if (!geometry.isBufferGeometry) {
         console.log("'geometry' must be an indexed or non-indexed buffer geometry");
         return 0;
@@ -1066,11 +1180,10 @@ export default defineComponent({
           p3.fromBufferAttribute(position, i * 3 + 2);
           sum += this.signedVolumeOfTriangle(p1, p2, p3);
         }
-      }
-      else {
+      } else {
         let index = geometry.index;
         let faces = index.count / 3;
-        for (let i = 0; i < faces; i++){
+        for (let i = 0; i < faces; i++) {
           p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
           p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
           p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
@@ -1081,7 +1194,7 @@ export default defineComponent({
     },
     signedVolumeOfTriangle(p1, p2, p3) {
       return p1.dot(p2.cross(p3)) / 6.0;
-    }
+    },
   },
 });
 </script>
