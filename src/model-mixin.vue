@@ -1117,7 +1117,7 @@ export default defineComponent({
 
               varying vec3 vbc;
               const float lineWidth = 1.0;
-              const vec3 color = vec3(0.0, 2.0, 1.0);
+              const vec3 color = vec3(191.0 / 255.0, 191.0 / 255.0, 191.0 / 255.0);
 
               float edgeFactor () {
                 vec4 d = fwidth(vBarycentric);
@@ -1126,7 +1126,7 @@ export default defineComponent({
               }
 
               void main() {
-                gl_FragColor = vec4(color, (1.0 - edgeFactor()) * 0.2);
+                gl_FragColor = vec4(color, 1.0 - edgeFactor());
               }
             `,
             vertexShader: `
