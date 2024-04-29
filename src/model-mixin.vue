@@ -1115,9 +1115,9 @@ export default defineComponent({
             fragmentShader: `
               varying vec4 vBarycentric;
 
-              varying vec3 vbc;
               const float lineWidth = 0.4;
-              const vec3 color = vec3(235.0 / 255.0, 235.0 / 255.0, 235.0 / 255.0);
+              const vec3 lineColor = vec3(157.0 / 255.0, 157.0 / 255.0, 157.0 / 255.0);
+              const vec3 quadColor = vec3(194.0 / 255.0, 194.0 / 255.0, 194.0 / 255.0);
 
               float edgeFactor () {
                 vec4 d = fwidth(vBarycentric);
@@ -1126,8 +1126,8 @@ export default defineComponent({
               }
 
               void main() {
-                gl_FragColor = vec4(min(vec3(edgeFactor()), color), 1.0);
-                // gl_FragColor = vec4(color, 1.0 - edgeFactor());
+                vec3 color = mix(quadColor, lineColor, 1.0 - edgeFactor());
+                gl_FragColor = vec4(color, 1);
               }
             `,
             vertexShader: `
