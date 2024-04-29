@@ -1117,7 +1117,7 @@ export default defineComponent({
 
               varying vec3 vbc;
               const float lineWidth = 0.7;
-              const vec3 color = vec3(89.0 / 255.0, 89.0 / 255.0, 89.0 / 255.0);
+              const vec3 color = vec3(217.0 / 255.0, 217.0 / 255.0, 217.0 / 255.0);
 
               float edgeFactor () {
                 vec4 d = fwidth(vBarycentric);
@@ -1126,7 +1126,8 @@ export default defineComponent({
               }
 
               void main() {
-                gl_FragColor = vec4(color, 1.0 - edgeFactor());
+                gl_FragColor = vec4(min(vec3(edgeFactor()), color), 1);
+                // gl_FragColor = vec4(color, 1.0 - edgeFactor());
               }
             `,
             vertexShader: `
@@ -1147,12 +1148,13 @@ export default defineComponent({
           });
           const mesh = new THREE.Mesh(geo, material);
           mesh.name = 'wireframeHelper';
-          mesh.scale.set(1.001, 1.001, 1.001)
-          this.object.children[0].add(mesh);
+          this.object.visible = false;
+          this.wrapper.add(mesh);
         }
       } else {
+        this.object.visible = true;
         let toBeDeleted = [];
-        this.object.traverse(child => {
+        this.wrapper.traverse(child => {
           if (child.name === 'wireframeHelper') {
             toBeDeleted.push(child);
           }
