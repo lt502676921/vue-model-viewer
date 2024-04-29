@@ -1116,7 +1116,7 @@ export default defineComponent({
               varying vec4 vBarycentric;
 
               varying vec3 vbc;
-              const float lineWidth = 1.0;
+              const float lineWidth = 0.7;
               const vec3 color = vec3(89.0 / 255.0, 89.0 / 255.0, 89.0 / 255.0);
 
               float edgeFactor () {
