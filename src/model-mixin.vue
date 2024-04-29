@@ -1117,7 +1117,7 @@ export default defineComponent({
 
               varying vec3 vbc;
               const float lineWidth = 1.0;
-              const vec3 color = vec3(191.0 / 255.0, 191.0 / 255.0, 191.0 / 255.0);
+              const vec3 color = vec3(89.0 / 255.0, 89.0 / 255.0, 89.0 / 255.0);
 
               float edgeFactor () {
                 vec4 d = fwidth(vBarycentric);
@@ -1147,6 +1147,7 @@ export default defineComponent({
           });
           const mesh = new THREE.Mesh(geo, material);
           mesh.name = 'wireframeHelper';
+          mesh.scale.set(1.001, 1.001, 1.001)
           this.object.children[0].add(mesh);
         }
       } else {
