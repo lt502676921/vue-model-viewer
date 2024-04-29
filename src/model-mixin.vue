@@ -1116,8 +1116,8 @@ export default defineComponent({
               varying vec4 vBarycentric;
 
               varying vec3 vbc;
-              const float lineWidth = 0.7;
-              const vec3 color = vec3(217.0 / 255.0, 217.0 / 255.0, 217.0 / 255.0);
+              const float lineWidth = 0.4;
+              const vec3 color = vec3(235.0 / 255.0, 235.0 / 255.0, 235.0 / 255.0);
 
               float edgeFactor () {
                 vec4 d = fwidth(vBarycentric);
@@ -1126,7 +1126,7 @@ export default defineComponent({
               }
 
               void main() {
-                gl_FragColor = vec4(min(vec3(edgeFactor()), color), 1);
+                gl_FragColor = vec4(min(vec3(edgeFactor()), color), 1.0);
                 // gl_FragColor = vec4(color, 1.0 - edgeFactor());
               }
             `,
@@ -1148,6 +1148,9 @@ export default defineComponent({
           });
           const mesh = new THREE.Mesh(geo, material);
           mesh.name = 'wireframeHelper';
+          const { rotation } = this;
+          const { x = 0, y = 0, z = 0 } = rotation;
+          mesh.rotation.set(x, y, z);
           this.object.visible = false;
           this.wrapper.add(mesh);
         }
