@@ -259,6 +259,7 @@ import { defineComponent } from 'vue';
 import { timeline } from './animation.js';
 import { SmoothControls, ChangeSource } from './three-components/SmoothControls.js';
 import { ModelScene } from './three-components/ModelScene.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 const DEFAULT_GL_OPTIONS = {
   antialias: true,
@@ -382,6 +383,7 @@ export default defineComponent({
       scene: new Scene(),
       wrapper: new Object3D(),
       renderer: null,
+      labelRenderer: null,
       composer: null,
       controls: null,
       allLights: [],
@@ -954,6 +956,10 @@ export default defineComponent({
     render() {
       this.renderer.render(this.scene, this.camera);
       // this.composer.render();
+
+      if (this.labelRenderer) {
+        this.labelRenderer.render(this.scene, this.camera);
+      }
     },
     startFingerGuideAnimation(t, frame) {
       const delta = t - this.lastTick;
@@ -1200,6 +1206,75 @@ export default defineComponent({
     },
     signedVolumeOfTriangle(p1, p2, p3) {
       return p1.dot(p2.cross(p3)) / 6.0;
+    },
+    createLine(start, end) {
+      // let angle = -Math.atan((end.z - start.z) / (end.x - start.x));
+      // if (window.isNaN(angle)) {
+      //   return false;
+      // }
+      let shape = new THREE.Shape();
+      shape.absarc(0, 0, 0.005, 0, Math.PI * 2, false);
+      let material = new THREE.MeshBasicMaterial({
+        color: 0xfff000,
+        polygonOffset: true,
+        polygonOffsetFactor: -1.0,
+        polygonOffsetUnits: -4.0,
+      });
+      let path = new THREE.LineCurve3(start, end);
+      let extrudeSettings = {
+        bevelEnabled: false,
+        steps: 1,
+        extrudePath: path,
+      };
+
+      let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      let mesh = new THREE.Mesh(geometry, material);
+
+      const arrowGeometry = new THREE.CylinderGeometry(0, 0.025, 0.1, 12);
+      const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const arrow1 = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      const arrow2 = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      // const line1 = new THREE.Line(geometry.clone(), material);
+      // const line2 = new THREE.Line(geometry.clone(), material);
+
+      // 设置箭头和线段位置
+      arrow1.position.set(start.x, start.y, start.z);
+      arrow2.position.set(end.x, end.y, end.z);
+      arrow2.rotation.x = -Math.PI;
+      // line1.position.y = (start.y);
+      // line1.position.y -= start.y / 2;
+      // line1.rotation.z = - Math.PI / 2
+
+      // line2.position.copy(end);
+      // console.log('arrow2',arrow2.position);
+      // console.log('line2',line2.position);
+      // line2.position.y += end.y / 2;
+      // line2.rotation.z = - Math.PI / 2
+
+      // 添加箭头和线段到场景中
+      this.scene.add(arrow1);
+      this.scene.add(arrow2);
+      // this.scene.add(line1);
+      // this.scene.add(line2);
+
+      const earthDiv = document.createElement('div');
+      earthDiv.className = 'label';
+      earthDiv.textContent = 'Earth';
+      earthDiv.style.backgroundColor = 'transparent';
+
+      const earthLabel = new CSS2DObject(earthDiv);
+      earthLabel.position.set(start.x, (start.y + end.y) / 2, start.z);
+      // earthLabel.center.set(0, 1);
+      this.scene.add(earthLabel);
+      earthLabel.layers.set(0);
+
+      this.labelRenderer = new CSS2DRenderer();
+      this.$refs.container.appendChild(this.labelRenderer.domElement);
+      this.labelRenderer.setSize(this.size.width, this.size.height);
+      this.labelRenderer.domElement.style.position = 'absolute';
+      this.labelRenderer.domElement.style.top = '0px';
+
+      return mesh;
     },
   },
 });

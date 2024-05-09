@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { defineComponent } from 'vue';
 // import { Object3D } from 'three';
 import { MeshPhysicalMaterial } from 'three';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { OBJLoader } from './custom-objloader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader';
 // import { LoadingManager } from 'three/src/loaders/LoadingManager';
@@ -106,20 +106,32 @@ export default defineComponent({
 
         this.updateObjectInfo();
 
+        // let box = new THREE.Box3()
+        // let size = box.setFromObject(object).getSize(new THREE.Vector3())
+        // console.log(size);
+
+
+        // const a = this.createLine({x: - size.x / 2, y: size.y / 2, z: 0}, { x: -size.x / 2, y: - size.y / 2, z: 0 })
+        // console.log(a);
+        // this.scene.add(a)
+
         // 测试计算体积
-        // let size = new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
-        // const targetHeight = 8;
-        // const scale = targetHeight / size.y;
-        // object.scale.set(scale, scale, scale)
+        if (this.deliverVolumeAndSize) {
+          let size = new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
 
-        // this.wrapper.add(new THREE.BoxHelper(object));
+          // const targetHeight = 8;
+          // const scale = targetHeight / size.y;
+          // object.scale.set(scale, scale, scale)
 
-        // object.traverse(child => {
-        //   if (child.geometry) {
-        //     // this.deliverVolume(this.computeVolume(child.geometry) * Math.pow(scale, 3), size)
-        //     this.deliverVolumeAndSize(this.computeVolume(child.geometry), size);
-        //   }
-        // });
+          // this.wrapper.add(new THREE.BoxHelper(object));
+
+          object.traverse(child => {
+            if (child.geometry) {
+              // this.deliverVolume(this.computeVolume(child.geometry) * Math.pow(scale, 3), size)
+              this.deliverVolumeAndSize(this.computeVolume(child.geometry), size);
+            }
+          });
+        }
 
         this.$emit('load');
       };
