@@ -373,6 +373,9 @@ export default defineComponent({
     deliverVolumeAndSize: {
       type: Function,
     },
+    dimensionDivTextContent: {
+      type: String,
+    },
   },
   data() {
     const result = {
@@ -433,6 +436,14 @@ export default defineComponent({
                     () => that.renderer.setAnimationLoop((time, frame) => that.startFingerGuideAnimation(time, frame)),
                     2000
                   );
+                  if (that.deliverVolumeAndSize && that.dimensionDivTextContent) {
+                    that.labelRenderer = new CSS2DRenderer();
+                    that.$refs.container.appendChild(that.labelRenderer.domElement);
+                    that.labelRenderer.setSize(that.size.width, that.size.height);
+                    that.labelRenderer.domElement.style.position = 'absolute';
+                    that.labelRenderer.domElement.style.top = '0px';
+                    that.labelRenderer.domElement.style.pointerEvents = 'none';
+                  }
                 }
               });
             } else {
@@ -441,6 +452,14 @@ export default defineComponent({
                 () => this.renderer.setAnimationLoop((time, frame) => this.startFingerGuideAnimation(time, frame)),
                 2000
               );
+              if (this.deliverVolumeAndSize && this.dimensionDivTextContent) {
+                this.labelRenderer = new CSS2DRenderer();
+                this.$refs.container.appendChild(this.labelRenderer.domElement);
+                this.labelRenderer.setSize(this.size.width, this.size.height);
+                this.labelRenderer.domElement.style.position = 'absolute';
+                this.labelRenderer.domElement.style.top = '0px';
+                this.labelRenderer.domElement.style.pointerEvents = 'none';
+              }
             }
           });
         },
@@ -1208,14 +1227,10 @@ export default defineComponent({
       return p1.dot(p2.cross(p3)) / 6.0;
     },
     createLine(start, end) {
-      // let angle = -Math.atan((end.z - start.z) / (end.x - start.x));
-      // if (window.isNaN(angle)) {
-      //   return false;
-      // }
       let shape = new THREE.Shape();
       shape.absarc(0, 0, 0.005, 0, Math.PI * 2, false);
       let material = new THREE.MeshBasicMaterial({
-        color: 0xfff000,
+        color: 0xffffff,
         polygonOffset: true,
         polygonOffsetFactor: -1.0,
         polygonOffsetUnits: -4.0,
@@ -1232,47 +1247,43 @@ export default defineComponent({
 
       const arrowGeometry = new THREE.CylinderGeometry(0, 0.025, 0.1, 12);
       const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const arrow1 = new THREE.Mesh(arrowGeometry, arrowMaterial);
-      const arrow2 = new THREE.Mesh(arrowGeometry, arrowMaterial);
-      // const line1 = new THREE.Line(geometry.clone(), material);
-      // const line2 = new THREE.Line(geometry.clone(), material);
+      const upArrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      const downArrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
 
-      // 设置箭头和线段位置
-      arrow1.position.set(start.x, start.y, start.z);
-      arrow2.position.set(end.x, end.y, end.z);
-      arrow2.rotation.x = -Math.PI;
-      // line1.position.y = (start.y);
-      // line1.position.y -= start.y / 2;
-      // line1.rotation.z = - Math.PI / 2
+      upArrow.position.set(start.x, start.y, start.z);
+      downArrow.position.set(end.x, end.y, end.z);
+      downArrow.rotation.x = -Math.PI;
 
-      // line2.position.copy(end);
-      // console.log('arrow2',arrow2.position);
-      // console.log('line2',line2.position);
-      // line2.position.y += end.y / 2;
-      // line2.rotation.z = - Math.PI / 2
+      mesh.add(upArrow);
+      mesh.add(downArrow);
 
-      // 添加箭头和线段到场景中
-      this.scene.add(arrow1);
-      this.scene.add(arrow2);
-      // this.scene.add(line1);
-      // this.scene.add(line2);
+      const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+      const upLinePoints = [];
+      upLinePoints.push(new THREE.Vector3(start.x - 0.1, start.y + 0.1 / 2, start.z));
+      upLinePoints.push(new THREE.Vector3(start.x + 0.2, start.y + 0.1 / 2, start.z));
 
-      const earthDiv = document.createElement('div');
-      earthDiv.className = 'label';
-      earthDiv.textContent = 'Earth';
-      earthDiv.style.backgroundColor = 'transparent';
+      const upLineGeo = new THREE.BufferGeometry().setFromPoints(upLinePoints);
+      const upLine = new THREE.Line(upLineGeo, lineMaterial);
 
-      const earthLabel = new CSS2DObject(earthDiv);
-      earthLabel.position.set(start.x, (start.y + end.y) / 2, start.z);
-      // earthLabel.center.set(0, 1);
-      this.scene.add(earthLabel);
-      earthLabel.layers.set(0);
+      const downLinePoints = [];
+      downLinePoints.push(new THREE.Vector3(end.x - 0.1, end.y - 0.1 / 2, end.z));
+      downLinePoints.push(new THREE.Vector3(end.x + 0.2, end.y - 0.1 / 2, end.z));
+      const downLineGeo = new THREE.BufferGeometry().setFromPoints(downLinePoints);
+      const downLine = new THREE.Line(downLineGeo, lineMaterial);
 
-      this.labelRenderer = new CSS2DRenderer();
-      this.$refs.container.appendChild(this.labelRenderer.domElement);
-      this.labelRenderer.setSize(this.size.width, this.size.height);
-      this.labelRenderer.domElement.style.position = 'absolute';
-      this.labelRenderer.domElement.style.top = '0px';
+      mesh.add(upLine);
+      mesh.add(downLine);
+
+      const dimensionDiv = document.createElement('div');
+      dimensionDiv.className = 'label';
+      dimensionDiv.textContent = this.dimensionDivTextContent;
+      dimensionDiv.style.backgroundColor = 'transparent';
+
+      const dimensionLabel = new CSS2DObject(dimensionDiv);
+      dimensionLabel.position.set(start.x, (start.y + end.y) / 2, start.z);
+      // dimensionLabel.center.set(0, 1);
+      mesh.add(dimensionLabel);
+      dimensionLabel.layers.set(0);
 
       return mesh;
     },

@@ -106,19 +106,18 @@ export default defineComponent({
 
         this.updateObjectInfo();
 
-        // let box = new THREE.Box3()
-        // let size = box.setFromObject(object).getSize(new THREE.Vector3())
-        // console.log(size);
-
-
-        // const a = this.createLine({x: - size.x / 2, y: size.y / 2, z: 0}, { x: -size.x / 2, y: - size.y / 2, z: 0 })
-        // console.log(a);
-        // this.scene.add(a)
-
         // 测试计算体积
         if (this.deliverVolumeAndSize) {
           let size = new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
 
+          if (this.dimensionDivTextContent) {
+            this.wrapper.add(
+              this.createLine(
+                { x: -size.x / 2 - 0.2, y: size.y / 2, z: 0 },
+                { x: -size.x / 2 - 0.2, y: -size.y / 2, z: 0 }
+              )
+            );
+          }
           // const targetHeight = 8;
           // const scale = targetHeight / size.y;
           // object.scale.set(scale, scale, scale)
