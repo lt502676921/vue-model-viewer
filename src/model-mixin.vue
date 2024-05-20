@@ -1330,10 +1330,10 @@ export default defineComponent({
       // if (this.progress.isComplete && this.object) {
       const now = performance.now();
 
-      let startY = new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2;
-      let endY = -(new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2);
-      let upPoint, downPoint, upArrow, downArrow;
-      if (this.wrapper) {
+      if (this.wrapper && this.object) {
+        let startY = new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2;
+        let endY = -(new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2);
+        let upPoint, downPoint, upArrow, downArrow;
         this.wrapper.traverse(child => {
           if (child.name === 'upLineDashed') {
             upPoint = {
@@ -1385,7 +1385,6 @@ export default defineComponent({
                 : -(now - this.promptElementVisibleTime) / 5000;
             // const endPositionY =
             // downPoint.y - this.threeClock.getDelta() >= endY ? endY : downPoint.y - this.threeClock.getDelta();
-            console.log('endPositionY', endPositionY);
             downLineDashedPoints.push(new THREE.Vector3(downPoint.x, endPositionY, downPoint.z));
             downLineDashedPoints.push(new THREE.Vector3(downPoint.x, 0, downPoint.z));
 
