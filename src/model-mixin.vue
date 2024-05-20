@@ -391,6 +391,7 @@ export default defineComponent({
       controls: null,
       allLights: [],
       clock: typeof performance === 'undefined' ? Date : performance,
+      threeClock: null,
       reqId: null, // requestAnimationFrame id,
       loader: null, // 会被具体实现的组件覆盖
       isPlayed: false, // 是否把玩过场景
@@ -443,6 +444,7 @@ export default defineComponent({
                     that.labelRenderer.domElement.style.position = 'absolute';
                     that.labelRenderer.domElement.style.top = '0px';
                     that.labelRenderer.domElement.style.pointerEvents = 'none';
+                    that.labelRenderer.domElement.style.color = '#fff';
                   }
                 }
               });
@@ -970,6 +972,9 @@ export default defineComponent({
     },
     animate() {
       this.reqId = requestAnimationFrame(this.animate);
+
+      this.animateDimension();
+
       this.render();
     },
     render() {
@@ -1226,50 +1231,84 @@ export default defineComponent({
     signedVolumeOfTriangle(p1, p2, p3) {
       return p1.dot(p2.cross(p3)) / 6.0;
     },
-    createLine(start, end) {
-      let shape = new THREE.Shape();
-      shape.absarc(0, 0, 0.005, 0, Math.PI * 2, false);
-      let material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        polygonOffset: true,
-        polygonOffsetFactor: -1.0,
-        polygonOffsetUnits: -4.0,
+    gradientLine(geo) {
+      const pos = geo.attributes.position;
+      const count = pos.count;
+      const colorsArr = [];
+      for (let i = 0; i < count; i++) {
+        const percent = i / (count - 1);
+        colorsArr.push(255, 255, 255, Math.pow(1 - percent, 5));
+      }
+      const colors = new Float32Array(colorsArr);
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 4));
+    },
+    createDimension(start, end) {
+      this.threeClock = new THREE.Clock();
+
+      let mesh = new THREE.Mesh();
+
+      const lineDashedMaterial = new THREE.LineDashedMaterial({
+        dashSize: 0.01,
+        gapSize: 0.01,
+        vertexColors: true,
+        transparent: true,
       });
-      let path = new THREE.LineCurve3(start, end);
-      let extrudeSettings = {
-        bevelEnabled: false,
-        steps: 1,
-        extrudePath: path,
-      };
+      const upLineDashedPoints = [];
+      // upLineDashedPoints.push(new THREE.Vector3(start.x, start.y, start.z));
+      upLineDashedPoints.push(new THREE.Vector3(start.x, 0, start.z));
+      upLineDashedPoints.push(new THREE.Vector3(start.x, 0, start.z));
 
-      let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-      let mesh = new THREE.Mesh(geometry, material);
+      const upLineDashedGeo = new THREE.BufferGeometry().setFromPoints(upLineDashedPoints);
+      this.gradientLine(upLineDashedGeo);
+      const upLineDashed = new THREE.Line(upLineDashedGeo, lineDashedMaterial);
+      upLineDashed.name = 'upLineDashed';
+      upLineDashed.computeLineDistances();
+      mesh.add(upLineDashed);
 
-      const arrowGeometry = new THREE.CylinderGeometry(0, 0.025, 0.1, 12);
+      const downLineDashedPoints = [];
+      // downLineDashedPoints.push(new THREE.Vector3(end.x, end.y, end.z)); // 这是结果
+      downLineDashedPoints.push(new THREE.Vector3(end.x, 0, end.z));
+      downLineDashedPoints.push(new THREE.Vector3(end.x, 0, end.z));
+
+      const downLineDashedGeo = new THREE.BufferGeometry().setFromPoints(downLineDashedPoints);
+      this.gradientLine(downLineDashedGeo);
+      const downLineDashed = new THREE.Line(downLineDashedGeo, lineDashedMaterial);
+      downLineDashed.name = 'downLineDashed';
+      downLineDashed.computeLineDistances();
+      mesh.add(downLineDashed);
+
+      const arrowGeometry = new THREE.CylinderGeometry(0, 0.0125, 0.05, 12);
       const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const upArrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      upArrow.name = 'upArrow';
       const downArrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+      downArrow.name = 'downArrow';
 
-      upArrow.position.set(start.x, start.y, start.z);
-      downArrow.position.set(end.x, end.y, end.z);
+      // upArrow.position.set(start.x, start.y, start.z);
+      upArrow.position.set(start.x, 0, start.z);
+      // downArrow.position.set(end.x, end.y, end.z);
+      downArrow.position.set(end.x, 0, end.z);
       downArrow.rotation.x = -Math.PI;
 
       mesh.add(upArrow);
       mesh.add(downArrow);
 
-      const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+      const lineMaterial = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0 });
       const upLinePoints = [];
-      upLinePoints.push(new THREE.Vector3(start.x - 0.1, start.y + 0.1 / 2, start.z));
-      upLinePoints.push(new THREE.Vector3(start.x + 0.2, start.y + 0.1 / 2, start.z));
-
+      upLinePoints.push(new THREE.Vector3(start.x - 0.1, start.y + 0.05 / 2, start.z));
+      upLinePoints.push(new THREE.Vector3(start.x + 0.2, start.y + 0.05 / 2, start.z));
       const upLineGeo = new THREE.BufferGeometry().setFromPoints(upLinePoints);
+      this.gradientLine(upLineGeo);
       const upLine = new THREE.Line(upLineGeo, lineMaterial);
+      upLine.name = 'upLine';
 
       const downLinePoints = [];
-      downLinePoints.push(new THREE.Vector3(end.x - 0.1, end.y - 0.1 / 2, end.z));
-      downLinePoints.push(new THREE.Vector3(end.x + 0.2, end.y - 0.1 / 2, end.z));
+      downLinePoints.push(new THREE.Vector3(end.x - 0.1, end.y - 0.05 / 2, end.z));
+      downLinePoints.push(new THREE.Vector3(end.x + 0.2, end.y - 0.05 / 2, end.z));
       const downLineGeo = new THREE.BufferGeometry().setFromPoints(downLinePoints);
+      this.gradientLine(downLineGeo);
       const downLine = new THREE.Line(downLineGeo, lineMaterial);
+      downLine.name = 'downLine';
 
       mesh.add(upLine);
       mesh.add(downLine);
@@ -1286,6 +1325,113 @@ export default defineComponent({
       dimensionLabel.layers.set(0);
 
       return mesh;
+    },
+    animateDimension() {
+      // if (this.progress.isComplete && this.object) {
+      const now = performance.now();
+
+      let startY = new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2;
+      let endY = -(new THREE.Box3().setFromObject(this.object).getSize(new THREE.Vector3()).y / 2);
+      let upPoint, downPoint, upArrow, downArrow;
+      if (this.wrapper) {
+        this.wrapper.traverse(child => {
+          if (child.name === 'upLineDashed') {
+            upPoint = {
+              x: child.geometry.attributes.position.array[0],
+              y: child.geometry.attributes.position.array[1],
+              z: child.geometry.attributes.position.array[2],
+            };
+            const lineDashedMaterial = new THREE.LineDashedMaterial({
+              dashSize: 0.01,
+              gapSize: 0.01,
+              vertexColors: true,
+              transparent: true,
+            });
+            const upLineDashedPoints = [];
+            const endPositionY =
+              (now - this.promptElementVisibleTime) / 5000 >= startY
+                ? startY
+                : (now - this.promptElementVisibleTime) / 5000;
+            upLineDashedPoints.push(new THREE.Vector3(upPoint.x, endPositionY, upPoint.z));
+            upLineDashedPoints.push(new THREE.Vector3(upPoint.x, 0, upPoint.z));
+
+            const upLineDashedGeo = new THREE.BufferGeometry().setFromPoints(upLineDashedPoints);
+            this.gradientLine(upLineDashedGeo);
+            const upLineDashed = new THREE.Line(upLineDashedGeo, lineDashedMaterial);
+            upLineDashed.name = 'upLineDashed';
+            upLineDashed.computeLineDistances();
+
+            const parent = child.parent;
+            parent.remove(child);
+
+            parent.add(upLineDashed);
+          }
+          if (child.name === 'downLineDashed') {
+            downPoint = {
+              x: child.geometry.attributes.position.array[0],
+              y: child.geometry.attributes.position.array[1],
+              z: child.geometry.attributes.position.array[2],
+            };
+            const lineDashedMaterial = new THREE.LineDashedMaterial({
+              dashSize: 0.01,
+              gapSize: 0.01,
+              vertexColors: true,
+              transparent: true,
+            });
+            const downLineDashedPoints = [];
+            const endPositionY =
+              -(now - this.promptElementVisibleTime) / 5000 <= endY
+                ? endY
+                : -(now - this.promptElementVisibleTime) / 5000;
+            // const endPositionY =
+            // downPoint.y - this.threeClock.getDelta() >= endY ? endY : downPoint.y - this.threeClock.getDelta();
+            console.log('endPositionY', endPositionY);
+            downLineDashedPoints.push(new THREE.Vector3(downPoint.x, endPositionY, downPoint.z));
+            downLineDashedPoints.push(new THREE.Vector3(downPoint.x, 0, downPoint.z));
+
+            const downLineDashedGeo = new THREE.BufferGeometry().setFromPoints(downLineDashedPoints);
+            this.gradientLine(downLineDashedGeo);
+            const downLineDashed = new THREE.Line(downLineDashedGeo, lineDashedMaterial);
+            downLineDashed.name = 'downLineDashed';
+            downLineDashed.computeLineDistances();
+
+            const parent = child.parent;
+            parent.remove(child);
+
+            parent.add(downLineDashed);
+          }
+          if (child.name === 'upArrow') {
+            upArrow = {
+              x: child.geometry.attributes.position.array[0],
+              y: child.geometry.attributes.position.array[1],
+              z: child.geometry.attributes.position.array[2],
+            };
+            const endPositionY =
+              (now - this.promptElementVisibleTime) / 5000 >= startY
+                ? startY
+                : (now - this.promptElementVisibleTime) / 5000;
+            child.position.y = endPositionY;
+          }
+          if (child.name === 'downArrow') {
+            downArrow = {
+              x: child.geometry.attributes.position.array[0],
+              y: child.geometry.attributes.position.array[1],
+              z: child.geometry.attributes.position.array[2],
+            };
+            const endPositionY =
+              -(now - this.promptElementVisibleTime) / 5000 <= endY
+                ? endY
+                : -(now - this.promptElementVisibleTime) / 5000;
+            child.position.y = endPositionY;
+          }
+          if (child.name === ('upLine' || 'downLine')) {
+            if (child.material.opacity < 1) {
+              child.material.opacity += this.threeClock.getDelta();
+            }
+          }
+        });
+        // }
+      }
     },
   },
 });

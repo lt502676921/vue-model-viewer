@@ -112,7 +112,7 @@ export default defineComponent({
 
           if (this.dimensionDivTextContent) {
             this.wrapper.add(
-              this.createLine(
+              this.createDimension(
                 { x: -size.x / 2 - 0.2, y: size.y / 2, z: 0 },
                 { x: -size.x / 2 - 0.2, y: -size.y / 2, z: 0 }
               )
