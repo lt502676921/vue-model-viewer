@@ -690,6 +690,9 @@ export default defineComponent({
     backgroundColor() {
       this.updateRenderer();
     },
+    dimensionDivTextContent(text) {
+      document.getElementsByClassName('label')[0].innerHTML = text
+    }
   },
   methods: {
     onResize() {

@@ -113,8 +113,8 @@ export default defineComponent({
           if (this.dimensionDivTextContent) {
             this.wrapper.add(
               this.createDimension(
-                { x: -size.x / 2 - 0.2, y: size.y / 2, z: 0 },
-                { x: -size.x / 2 - 0.2, y: -size.y / 2, z: 0 }
+                { x: -size.x / 2 - size.x / 10, y: size.y / 2, z: 0 },
+                { x: -size.x / 2 - size.x / 10, y: -size.y / 2, z: 0 }
               )
             );
           }
