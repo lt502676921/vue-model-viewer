@@ -691,8 +691,8 @@ export default defineComponent({
       this.updateRenderer();
     },
     dimensionDivTextContent(text) {
-      document.getElementsByClassName('label')[0].innerHTML = text
-    }
+      document.getElementById('model-viewer-dimension-label').innerHTML = text;
+    },
   },
   methods: {
     onResize() {
@@ -1318,6 +1318,7 @@ export default defineComponent({
 
       const dimensionDiv = document.createElement('div');
       dimensionDiv.className = 'label';
+      dimensionDiv.id = 'model-viewer-dimension-label';
       dimensionDiv.textContent = this.dimensionDivTextContent;
       dimensionDiv.style.backgroundColor = 'transparent';
 
