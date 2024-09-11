@@ -254,7 +254,7 @@ import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OrbitControls } from './custom-orbitcontrols';
 import { gsap } from 'gsap';
-import { getSize, getCenter } from './utils';
+import { getSize, getCenter, dataURLtoBlob } from './utils';
 import { defineComponent } from 'vue';
 import { timeline } from './animation.js';
 import { SmoothControls, ChangeSource } from './three-components/SmoothControls.js';
@@ -376,6 +376,9 @@ export default defineComponent({
     dimensionDivTextContent: {
       type: String,
     },
+    deliverSnapshot: {
+      type: Function,
+    }
   },
   data() {
     const result = {
@@ -462,6 +465,10 @@ export default defineComponent({
                 this.labelRenderer.domElement.style.top = '0px';
                 this.labelRenderer.domElement.style.pointerEvents = 'none';
               }
+            }
+
+            if (this.deliverSnapshot) {
+              this.deliverSnapshot(this.snapshot());
             }
           });
         },
@@ -1436,6 +1443,11 @@ export default defineComponent({
         // }
       }
     },
+    snapshot() {
+      this.renderer.render(this.scene, this.camera);
+      const dataUrl = this.renderer.domElement.toDataURL();
+      return dataURLtoBlob(dataUrl);
+    }
   },
 });
 </script>
