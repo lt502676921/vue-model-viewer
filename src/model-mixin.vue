@@ -468,7 +468,9 @@ export default defineComponent({
             }
 
             if (this.deliverSnapshot) {
-              this.deliverSnapshot(this.snapshot());
+              this.snapshot().then(res => {
+                this.deliverSnapshot(res);
+              })
             }
           });
         },
@@ -1447,9 +1449,13 @@ export default defineComponent({
       }
     },
     snapshot() {
-      this.renderer.render(this.scene, this.camera);
-      const dataUrl = this.renderer.domElement.toDataURL();
-      return dataURLtoBlob(dataUrl);
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.renderer.render(this.scene, this.camera);
+          const dataUrl = this.renderer.domElement.toDataURL();
+          resolve(dataURLtoBlob(dataUrl));
+        }, 1500);
+      });
     },
   },
 });
