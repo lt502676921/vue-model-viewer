@@ -378,7 +378,7 @@ export default defineComponent({
     },
     deliverSnapshot: {
       type: Function,
-    }
+    },
   },
   data() {
     const result = {
@@ -698,7 +698,10 @@ export default defineComponent({
       this.updateRenderer();
     },
     dimensionDivTextContent(text) {
-      document.getElementById('model-viewer-dimension-label').innerHTML = text;
+      const ele = document.getElementById('model-viewer-dimension-label');
+      if (ele) {
+        ele.innerHTML = text;
+      }
     },
   },
   methods: {
@@ -1447,7 +1450,7 @@ export default defineComponent({
       this.renderer.render(this.scene, this.camera);
       const dataUrl = this.renderer.domElement.toDataURL();
       return dataURLtoBlob(dataUrl);
-    }
+    },
   },
 });
 </script>
