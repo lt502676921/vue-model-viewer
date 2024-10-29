@@ -703,6 +703,14 @@ export default defineComponent({
       const ele = document.getElementById('model-viewer-dimension-label');
       if (ele) {
         ele.innerHTML = text;
+      } else {
+        const timer = setInterval(() => {
+          const ele = document.getElementById('model-viewer-dimension-label');
+          if (ele) {
+            ele.innerHTML = text;
+            clearInterval(timer);
+          }
+        }, 500)
       }
     },
   },
