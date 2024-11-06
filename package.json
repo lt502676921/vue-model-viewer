@@ -1,12 +1,11 @@
 {
-  "name": "@aeonlabs/vue-model-viewer",
-  "version": "0.0.67",
+  "name": "@artefacts.tech/vue-model-viewer",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/vue-model-viewer.cjs.js",
   "module": "dist/vue-model-viewer.esm.js",
   "files": [
     "dist",
-    "src",
     "LICENSE",
     "package.json",
     "README.md"
