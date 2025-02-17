@@ -379,6 +379,9 @@ export default defineComponent({
     deliverSnapshot: {
       type: Function,
     },
+    beforeToggleWireframeMode: {
+      type: Function,
+    },
   },
   data() {
     const result = {
@@ -470,7 +473,7 @@ export default defineComponent({
             if (this.deliverSnapshot) {
               this.snapshot().then(res => {
                 this.deliverSnapshot(res);
-              })
+              });
             }
           });
         },
@@ -516,6 +519,7 @@ export default defineComponent({
           }
         `,
       }),
+      objectMaterial: null,
     };
 
     // 确保这些对象不被转为 vue reactive 对象，避免 three 渲染出错
@@ -710,7 +714,7 @@ export default defineComponent({
             ele.innerHTML = text;
             clearInterval(timer);
           }
-        }, 500)
+        }, 500);
       }
     },
   },
@@ -1125,6 +1129,9 @@ export default defineComponent({
     toggleWireframeMode() {
       this.isWireframeMode = !this.isWireframeMode;
       if (this.isWireframeMode) {
+        if (this.beforeToggleWireframeMode) {
+          this.beforeToggleWireframeMode();
+        }
         if (this.wireframeMode === 'triangle') {
           this.object.traverse(child => {
             if (child.isMesh && child.geometry) {
@@ -1207,8 +1214,12 @@ export default defineComponent({
           this.object.visible = false;
           this.wrapper.add(mesh);
         }
+        console.log(this.object.children[0].material);
+        this.objectMaterial = this.object.children[0].material;
+        this.object.children[0].material = new THREE.MeshBasicMaterial({ color: '#ffffff' });
       } else {
         this.object.visible = true;
+        this.object.children[0].material = this.objectMaterial;
         let toBeDeleted = [];
         this.wrapper.traverse(child => {
           if (child.name === 'wireframeHelper') {
